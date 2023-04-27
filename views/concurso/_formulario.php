@@ -41,7 +41,7 @@ use yii\helpers\Json;
                 <p style="font-weight:600;font-family:Helvetica">Tipo de concurso</p>
             </div>        
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (TipoConcurso::find()->where(['id_tipo_concurso' => $model->id_tipo_concurso])->one()->descripcion_tipo_concurso);} catch(exception){echo ('');} ?></p>
+                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (TipoConcurso::find()->where(['id_tipo_concurso' => $model->id_tipo_concurso])->one()->descripcion_tipo_concurso);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
         </div>
 
@@ -50,7 +50,7 @@ use yii\helpers\Json;
                 <p style="font-weight:600;font-family:Helvetica">Unidad académica</p>
             </div>        
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Facultad::find()->where(['id_facultad' => $model->id_facultad])->one()->nombre_facultad);} catch(exception){echo ('');} ?></p>
+                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Facultad::find()->where(['id_facultad' => $model->id_facultad])->one()->nombre_facultad);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
         </div>
 
@@ -59,7 +59,7 @@ use yii\helpers\Json;
                 <p style="font-weight:600;font-family:Helvetica">Área</p>
             </div>        
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $model->id_area_departamento])->one()->descripcion_area_departamento);} catch(exception){echo ('');} ?></p>
+                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $model->id_area_departamento])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
         </div>
 
@@ -72,7 +72,7 @@ use yii\helpers\Json;
                     $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $model->id_concurso])->one()->id_asignatura;
                     $asignatura=Asignatura::find()->where(['id_asignatura' => $id_asignatura])->one()->descripcion_asignatura;
                 } 
-                catch(exception){
+                catch(\Throwable $e){
                     $asignatura='';
                 }
             ?>    
@@ -97,7 +97,7 @@ use yii\helpers\Json;
                 <p style="font-weight:600;font-family:Helvetica">Categoría</p>
             </div>        
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Categoria::find()->where(['id_categoria' => $model->id_categoria])->one()->descripcion_categoria);} catch(exception){echo ('');} ?></p>
+                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Categoria::find()->where(['id_categoria' => $model->id_categoria])->one()->descripcion_categoria);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
         </div>
 
@@ -106,7 +106,7 @@ use yii\helpers\Json;
                 <p style="font-weight:600;font-family:Helvetica">Dedicación</p>
             </div>        
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Dedicacion::find()->where(['id_dedicacion' => $model->id_dedicacion])->one()->descripcion_dedicacion);} catch(exception){echo ('');} ?></p>
+                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?php try{echo (Dedicacion::find()->where(['id_dedicacion' => $model->id_dedicacion])->one()->descripcion_dedicacion);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
         </div>
 

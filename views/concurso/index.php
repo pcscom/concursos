@@ -16,6 +16,7 @@ use app\models\AreaDepartamento;
 use app\models\Categoria;
 use app\models\ConcursoAsignatura;
 use app\models\Asignatura;
+use app\models\Dedicacion;
 
 $this->title = 'Concursos';
 ?>
@@ -84,7 +85,7 @@ $this->title = 'Concursos';
                 white-space: nowrap;"
                 disabled>
                 </select>
-                <p class="mx-4 areas" style="font-size:18px;font-weight:400;height:15px">Área</p>
+                <p class="mx-4 areas" style="font-size:18px;font-weight:400;height:15px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></p>
             </div>
 
             <div class="mt-2" style="display: flex;flex-direction:row-reverse;width: 100%;">
@@ -138,19 +139,19 @@ $this->title = 'Concursos';
                     foreach ($concursos as $concurso): 
                 ?>
                     <tr>
-                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->one()->descripcion_area_departamento);} catch(exception){echo ('');} ?></th>
+                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></th>
                         <?php 
                             try{
                                 $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $concurso['id_concurso']])->one()->id_asignatura;
                                 $asignatura=Asignatura::find()->where(['id_asignatura' => $id_asignatura])->one()->descripcion_asignatura;
                             } 
-                            catch(exception){
+                            catch(\Throwable $e){
                                 $asignatura='';
                             }
                         ?>
                         <td style="text-align: center;vertical-align: middle;width:150px"><?=$asignatura?></th>
-                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (Categoria::find()->where(['id_categoria' => $concurso['id_categoria']])->one()->descripcion_categoria);} catch(exception){echo ('');}?></th>
-                        <td style="text-align: center;vertical-align: middle;width:100px">Dedicación</th>
+                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (Categoria::find()->where(['id_categoria' => $concurso['id_categoria']])->one()->descripcion_categoria);} catch(\Throwable $e){echo ('');}?></th>
+                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (Dedicacion::find()->where(['id_dedicacion' => $concurso['id_dedicacion']])->one()->descripcion_dedicacion);} catch(\Throwable $e){echo ('');} ?></th>
                         <td style="text-align: center;vertical-align: middle;width:70px"><?=$concurso['cantidad_de_puestos']?></th>
                         <td style="text-align: center;vertical-align: middle;width:150px">Desde <br><?=$concurso['fecha_inicio_inscripcion']?> <br>Hasta <br><?=$concurso['fecha_fin_inscripcion']?></th>
                         <td style="text-align: center;vertical-align: middle;width:100px"><?=$concurso['numero_expediente']?></td>
