@@ -46,8 +46,6 @@ tests/_support/_generated
 /.vagrant
 
 
-.protected/vendor/*
-
 assets/*
 !assets/.gitignore
 protected/runtime/*
