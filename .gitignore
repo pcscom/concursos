@@ -26,8 +26,9 @@ nbproject
 Thumbs.db
 
 # composer vendor dir
-vendor/
-!./vendor/2amigos/yii2-usuario/
+vendor/*
+!vendor/2amigos/
+
 # composer itself is not needed
 composer.phar
 
