@@ -71,7 +71,7 @@ $config = [
                 'port' => '25',
                 'dsn' => 'native://default',
             ],
-            //'viewPath' => '@common/mail',
+            // 'viewPath' => 'mail',
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure transport
             // for the mailer to send real emails.
