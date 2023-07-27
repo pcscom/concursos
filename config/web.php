@@ -12,9 +12,11 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'modules' => [
+        'session' => [
+            'class' => 'yii\web\Session',
+        ],
         'user' => [
             'class' => Da\User\Module::class,
-            
             // ...other configs from here: [Configuration Options](installation/configuration-options.md), e.g.
             // 'administrators' => ['admin'], // this is required for accessing administrative actions
             // 'generatePasswords' => true,
@@ -29,7 +31,24 @@ $config = [
             // 'i18n' => []
         ]
     ],
-    'components' => [   
+    'components' => [  
+        'as beforeRequest' => [
+            'class' => 'yii\filters\AccessControl',
+            'rules' => [
+                [
+                    'allow' => true,
+                    'actions' => ['login'],
+                    'roles' => ['?'], // Usuarios no autenticados
+                ],
+                [
+                    'allow' => true,
+                    'roles' => ['@'], // Usuarios autenticados
+                ],
+            ],
+            'denyCallback' => function ($rule, $action) {
+                return Yii::$app->response->redirect(['user/login']); // Redirige a la página de login
+            },
+        ], 
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'vEyClvJhVt-oQmF7tjO7mPvgON9_nppa',
@@ -82,7 +101,8 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    // 'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning','info'],
                 ],
             ],
         ],
@@ -92,6 +112,9 @@ $config = [
             'showScriptName' => false,
             'rules' => [
             ],
+        ],
+        'user' => [
+            'authTimeout' => 1200,   // segundos
         ],
     ],
     'params' => $params,

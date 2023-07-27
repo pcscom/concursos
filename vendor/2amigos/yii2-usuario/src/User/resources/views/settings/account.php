@@ -199,7 +199,7 @@ $module = Yii::$app->getModule('user');
     var choice = '';
     $('#tfmodal')
     .on('show.bs.modal', function(){
-        console.log("show");
+        // console.log("show");
         var element = document.getElementsByName('2famethod');
         for(i = 0; i < element.length; i++) {
             if(element[i].checked)

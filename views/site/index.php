@@ -9,19 +9,32 @@ $this->title = 'Concursos';
 ?>
 <link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
 
+<style>
+.authbutton {
+  background-color: white;
+  border-radius:5px;
+  text-decoration: none;
+  width:240px;
+  border: 2px solid #40BB97;
+  color: #40BB97;
+  padding: 10px 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.authbutton:hover {
+  background-color: #40BB97;
+  color: white;
+}
+</style>
+
 <div class="site-index">
     <?php if (Yii::$app->user->isGuest): ?>
 
-    <div class="card" style="background-color:#D5D4F4;width:934px;height:393px;align-items:center;justify-content:center;border-radius: 15px;">
-        <H1 style="width:480px;font-family:Georgia" class="text-center">Avisos de llamados a concurso en su casilla de correo electrónico</H1>
-        <p style="width:480px;font-family:Helvetica LT Std" class="text-center">
-        Si usted es un usuario registrado, ahora tiene la posibilidad de suscribirse para recibir avisos cuando se publiquen nuevos llamados a concurso que sean de su interés. 
-Ingrese con su documento y contraseña, y realice su registro en “Suscripción a Novedades”, especificando las asignaturas, categoría y dedicación deseadas. 
-Si aún no es un usuario registrado, regístrese y acceda a esta nueva facilidad.
-        </p>
-        <div class="row">
-            <a href="<?=Url::to(['/user/security/login'])?>" class=" text-center py-2 mx-2" style="width:240px;background-color:white;border-radius:5px;color:#40BB97;text-decoration: none;">INICIAR SESIÓN</a>
-            <a href="<?=Url::to(['/user/registration/register'])?>" class=" text-center py-2 mx-2" style="width:240px;background-color:#40BB97;border-radius:5px;color:white;text-decoration: none;">REGISTRARSE</a>
+    <div class="card" style="border:none;background-color:transparent;width:934px;align-items:center;justify-content:center;">
+    <H2>Bienvenido</H2>
+        <div class="row mt-2">
+            <a href="<?=Url::to(['/user/security/login'])?>" class=" text-center py-2 mx-2 authbutton">INICIAR SESIÓN</a>
+            <a href="<?=Url::to(['/user/registration/register'])?>" class=" text-center py-2 mx-2 authbutton">REGISTRARSE</a>
         </div>
     </div>
 
@@ -49,8 +62,12 @@ Si aún no es un usuario registrado, regístrese y acceda a esta nueva facilidad
             </div>
         </div>
         <div class="row my-2">
-            <div class="card mx-2" style="cursor:pointer;background-color:#FFEACB;width:285px;height:214px;align-items:start;justify-content:start;border-radius: 15px;">
-                <p style="margin-left:20px;margin-top:30px;font-size:32px;font-family:Helvetica">Concursos en trámite</p>
+            <div 
+                class="card mx-2" 
+                style="cursor:pointer;background-color:#FFEACB;width:285px;height:214px;align-items:start;justify-content:start;border-radius: 15px;"
+                onclick="location.href='<?= Url::to(['/concurso/tramite'])?>'"
+            >
+                <p style="margin-left:20px;margin-top:30px;font-size:32px;font-family:Helvetica">Mis concursos en trámite</p>
                 <?= Html::img('@web/images/home/pencil_ico.png', ['style' => 'position: absolute;height: 100px; bottom: 15px; right: 35px;']) ?>
             </div>
             <div class="card mx-2" style="cursor:pointer;background-color:#E7ECF2;width:285px;height:214px;align-items:center;justify-content:end;border-radius: 15px;"
@@ -64,6 +81,6 @@ Si aún no es un usuario registrado, regístrese y acceda a esta nueva facilidad
         </div>
     </div>
     <div class="card my-4" style="padding:10px;border-radius:none;border:none;background-color:#F3F4F6;width:934px;align-items:center;justify-content:center">
-    <p style="font-family:Helvetica"><b>Importante:</b> Para poder Inscribirse (Etapa 1) en un concurso publicado por la Universidad de Buenos Aires, es necesario que sea un usuario registrado.</p>
+    <p style="font-family:Helvetica"><b>Importante:</b> Para poder preinscribirse en un concurso publicado por la Universidad de Buenos Aires, es necesario que sea un usuario registrado.</p>
     </div>
 </div>

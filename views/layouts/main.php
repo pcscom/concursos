@@ -18,6 +18,8 @@ $this->registerMetaTag(['name' => 'viewport', 'content' => 'width=device-width, 
 $this->registerMetaTag(['name' => 'description', 'content' => $this->params['meta_description'] ?? '']);
 $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_keywords'] ?? '']);
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii::getAlias('@web/favicon.ico')]);
+Html::cssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -40,6 +42,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         ?>
         <div style="display: flex;flex: auto;flex-direction: column-reverse;">
         <?= Nav::widget([
+            'encodeLabels' => false,
             'options' => ['class' => 'navbar-nav','style' => 'display: flex;flex-direction: row-reverse;',],            
             'items' => [
                 '<li class="nav-item">'
@@ -49,7 +52,18 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                     ['class' => 'nav-link btn btn-link logout', 'style' => 'color:black;display: flex;flex-direction: row-reverse;']
                 )
                 . Html::endForm()
-                . '</li>'
+                . '</li>',
+                [
+                    'label' => '<p style="margin-bottom:0;color:black">Páginas</p>',
+                    'visible' => !Yii::$app->user->isGuest,
+                    'items' => [
+                        ['label' => 'Mi perfil', 'url' => ['/profile']],
+                        ['label' => 'Llamados a concursos', 'url' => ['/concurso']],
+                        ['label' => 'Mis concursos', 'url' => ['/concurso/tramite']],
+                        ['label' => 'Datos UUAA', 'url' => ['/site/datos-utiles']],
+                        ['label' => 'Doc. a presentar', 'url' => ['/site/documentos']],
+                    ],
+                ],
             ]
         ])?>
         </div>

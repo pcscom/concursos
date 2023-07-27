@@ -1,79 +1,233 @@
 <?php
 
 namespace app\controllers;
-use yii\filters\AccessControl;
 
+use app\models\Profile;
+use app\models\ProfileQuery;
+use app\models\Adjuntos;
+use app\models\AdjuntosQuery;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use Yii;
+use yii\bootstrap5\ActiveForm;
+use kartik\file\FileInput;
+use yii\web\UploadedFile;
 use app\models\Concurso;
 use app\models\ConcursoQuery;
 use app\models\Facultad;
 use app\models\Preinscripto;
 use app\models\AreaDepartamento;
-use app\models\Profile;
-use app\models\ProfileQuery;
-
-use Yii;
-use yii\data\ActiveDataProvider;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\Fpdf\Fpdf;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
-
 /**
- * ConcursoController implements the CRUD actions for Concurso model.
+ * ProfileController implements the CRUD actions for Profile model.
  */
-class ConcursoController extends Controller
+class ProfileController extends Controller
 {
     /**
      * @inheritDoc
      */
-    public function behaviors()
-    {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'access' => [
-                    'class' => AccessControl::class,
-                    'rules' => [
-                        [
-                            'actions' => ['confirmar','descargar','previsualizar','preinscripcion','index','view','create','update','delete','area','formulario','tramite'],
-                            'allow' => true,
-                            'roles' => ['@'],
-                        ],
-                        [
-                            'actions' => ['previsualizar','preinscripcion','index','view','create','update','delete','area','formulario','tramite'],
-                            'allow' => false,
-                            'roles' => ['?'],
-                        ],
-                    ],
-                ],
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
-                ],
-            ]
-        );
-    }
+    // public function behaviors()
+    // {
+    //     return array_merge(
+    //         parent::behaviors(),
+    //         [
+    //             'verbs' => [
+    //                 'class' => VerbFilter::className(),
+    //                 'actions' => [
+    //                     'delete' => ['POST'],
+    //                 ],
+    //             ],
+    //         ]
+    //     );
+    // }
 
-    private $pdf;
-    public function __construct($id, $module, $config = [])
-    {
-        $this->pdf = new Fpdi();
-        parent::__construct($id, $module, $config);
-    }
+    /**
+     * Lists all Profile models.
+     *
+     * @return string
+     */
 
-    public function actionPrevisualizar()
+    public function actionDelete()
     {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
         if ($this->request->isPost) 
         {
-            $id = $_POST['id'];
+            $doc = $_POST['doc'];
+            $adjunto = ADJUNTOS::findOne(['user_id' => Yii::$app->user->id, 'nombre' => $doc]); 
+            if($adjunto->delete(false))
+            {
+                return json_encode(['success' => true]);
+            }
+        }
+        return json_encode(['error' => false]);
+    }
+ 
+    public function actionUpload($tipo)
+    {
+        if ($this->request->isPost) 
+        {
+            $adjuntos = new Adjuntos();
+            $model = new Adjuntos();
+            $adjuntos->nombre = UploadedFile::getInstance($adjuntos, 'nombre');  
+            if (substr($adjuntos->nombre, -4) !== ".pdf") {
+                Yii::$app->session->setFlash('error', 'El archivo debe ser de tipo PDF');
+                echo json_encode(false); // return json data
+                return(false);
+            }   
+            $path = 'attachments/antecedentes/' . Yii::$app->user->id . "_" .$adjuntos->nombre;
+            // $model->url = $path;     
+            $model->tamano = $adjuntos->nombre->size; 
+            $model->tipo=$tipo;
+            $model->user_id=Yii::$app->user->id;
+            if($adjuntos->nombre->saveAs($path))
+            {
+                $model->nombre = $adjuntos->nombre->name;
+                $model->validate();
+                $model->save();
+                if ($model->save()) 
+                {
+                    Yii::$app->session->setFlash('success', 'El archivo se guardó correctamente');
+                    echo json_encode(true); // return json data
+                    return(false);
+                }
+            }
+            
+        }
+        Yii::$app->session->setFlash('error', 'Ha ocurrido un error al subir el archivo');
+        echo json_encode(false);
+        return(false);
+    }
 
+
+    public function actionIndex($cid=0)
+    {        
+        $dataProvider = Profile::findOne(['user_id' => Yii::$app->user->id]);
+
+        if ($this->request->isPost) 
+        {
+            if ($dataProvider->load($this->request->post())) 
+            {
+                if(isset($dataProvider->cid) && $dataProvider->cid !== 0)
+                {
+                    $dataProvider->save(false);
+                    if(!($this->preinscripcion($dataProvider->cid) && $this->previsualizar($dataProvider->cid)))
+                    {
+                        Yii::$app->session->setFlash('error', 'Error al preinscribirse.');
+                        return $this->render('index', [
+                            'dataProvider' => $dataProvider,
+                        ]);   
+                    }
+                    Yii::$app->session->setFlash('success', 'Se preinscribió correctamente');
+                    return $this->redirect(['/concurso']);
+                }
+                if($dataProvider->save(false))
+                {
+                    Yii::$app->session->setFlash('success', 'Perfil actualizado!');
+                    return $this->render('index', [
+                        'dataProvider' => $dataProvider,
+                    ]);
+                }
+                else{
+                    Yii::$app->session->setFlash('error', 'Error al guardar los datos.');
+                    return $this->render('index', [
+                        'dataProvider' => $dataProvider,
+                    ]);
+                }
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', 'Error al guardar los datos.');
+                return $this->render('index', [
+                    'dataProvider' => $dataProvider,
+                ]);            
+            }
+        } 
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+            'cid' => $cid
+        ]);
+    }
+
+    /**
+     * Displays a single Profile model.
+     * @param int $user_id Id Profile
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionView($user_id)
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($user_id),
+        ]);
+    }
+
+    /**
+     * Updates an existing Profile model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param int $user_id Id Profile
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($user_id)
+    {
+        $model = $this->findModel($user_id);
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'user_id' => $model->user_id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Finds the Profile model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param int $user_id Id Profile
+     * @return Profile the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($user_id)
+    {
+        if (($model = Profile::findOne(['user_id' => $user_id])) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+
+    public function preinscripcion($id)
+    {
+        $concurso = Concurso::find()->where(['id_concurso' => $id])->one();
+        $preinscripto = new Preinscripto();
+        $preinscripto->user_id = Yii::$app->user->id;
+        $preinscripto->concurso_id = $id;
+
+        $file = FileHelper::findFiles('attachments/formularios', [
+            'only' => [Yii::$app->user->id.'_' . $id . '*' . 'pdf'],
+        ]);
+
+        if ($this->request->isPost) 
+        {
+            if($preinscripto->save(false))
+            {
+                return true;
+            }
+            return false;        
+        }
+        return true;
+    }
+
+    public function previsualizar($id)
+    {
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
             try
             {
                 $adjuntos = FileHelper::findFiles('attachments/antecedentes', [
@@ -81,7 +235,7 @@ class ConcursoController extends Controller
                 ]);
                 $pdf = new Fpdi();
                 $width = $pdf->GetPageWidth('A4') - 20;
-                $lineHeight = 10; // Altura de cada línea
+                $lineHeight = 10; 
 
                 $pdf->AddPage();
                 $pdf->SetFont('Arial', 'B', 16);
@@ -89,9 +243,6 @@ class ConcursoController extends Controller
 
                 $pdf->SetFont('Arial', 'B', 14, '', true, 'UTF-8');
                 $pdf->Cell(40, 10, 'Datos del Aspirante', 0, 1);
-
-                ($profile->user_id)&&$pdf->Cell(40, 10, 'userid: '.Yii::$app->user->id, 0, 1);     
-
 
                 $pdf->SetFont('Arial', '', 12, '', true, 'UTF-8');
                 ($profile->numero_documento)&&$pdf->Cell(40, 10, 'Documento: '.$profile->numero_documento, 0, 1);                              
@@ -196,232 +347,21 @@ class ConcursoController extends Controller
                 $height = $lines * $lineHeight; 
                 ($profile->renovacion)&&$pdf->MultiCell($width, 10, utf8_decode($profile->renovacion), 0, 'L');
 
-                // $pdf->SetLanguageArray('UTF-8');
                 $pdf->Output('attachments/formularios/tmp.pdf', 'F');
 
-                if (filesize('attachments/formularios/tmp.pdf') > 50000000)
+                if (filesize('attachments/formularios/tmp.pdf') >= 50000000)
                 {
                     Yii::$app->session->setFlash('error', 'El formulatio debe tener peso un máximo de 50MB');
-                    return true;
+                    return false;
                 }
                 $pdf->Output('attachments/formularios/'.Yii::$app->user->id.'_'.$id.'.pdf', 'F');
+                return true;
             }
             catch(Exception $e)
             {
                 Error($e->getMessage());
-                Yii::$app->session->setFlash('error', 'Hubo un error al preinscribirse');
                 return false;
             }
-        }
         return false;
-    }
-
-    public function actionPreinscripcion($id)
-    {
-        $concurso = Concurso::find()->where(['id_concurso' => $id])->one();
-        $preinscripto = new Preinscripto();
-        $preinscripto->user_id = Yii::$app->user->id;
-        $preinscripto->concurso_id = $id;
-
-        $file = FileHelper::findFiles('attachments/formularios', [
-            'only' => [Yii::$app->user->id.'_' . $id . '*' . 'pdf'],
-        ]);
-
-        if ($this->request->isPost) 
-        {
-            if($preinscripto->save(false))
-            {
-                Yii::$app->session->setFlash('success', 'Se preinscribió correctamente');
-                return true;
-            }
-            return false;
-        }
-        return $this->renderPartial('_preinscribirse', [
-            'file' => basename($file[0]),
-            'id' =>  $id
-        ]);
-    }
-
-    public function actionConfirmar()
-    {
-        $id = Yii::$app->request->post('id');
-        $preinscripto = new Preinscripto();
-        $preinscripto->user_id = Yii::$app->user->id;
-        $preinscripto->concurso_id = $id;
-
-        if($preinscripto->save(false))
-        {
-            Yii::$app->session->setFlash('success', 'Se preinscribió correctamente');
-            return true;
-        }
-        return false;
-    }
-
-    public function actionDescargar($ruta)
-    {        
-        $rutaCompleta = 'attachments/formularios/'.$ruta;
-        // return($rutaCompleta);
-
-
-        // if (file_exists($rutaCompleta)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . basename($rutaCompleta) . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($rutaCompleta));
-            readfile($rutaCompleta);
-            exit;
-        // } 
-    }
-
-    public function actionIndex($ua='%',$ar='%')
-    {
-        $profile = Profile::find(['user_id' => Yii::$app->user->id])->one();
-        $searchModel = Concurso::find();
-        $dataProvider = new ActiveDataProvider([
-            'query' => Concurso::find(),
-            'sort' => [
-                'defaultOrder' => [
-                    'id_concurso' => SORT_DESC,
-                ]
-            ],
-            
-        ]);
-        $facultad = Facultad::find("id_facultad","nombre_facultad")->orderBy(['nombre_facultad' => SORT_ASC])->all();
-        return $this->render('index', [
-            'model' => $dataProvider,
-            'searchModel' => $searchModel,
-            'facultad' => $facultad,
-            'ua' => $ua,
-            'ar' => $ar,
-            'profile' => $profile
-        ]);
-    }
-
-    /**
-     * Displays a single Concurso model.
-     * @param int $id_concurso Id Concurso
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id_concurso)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id_concurso),
-        ]);
-    }
-
-    /**
-     * Creates a new Concurso model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreate()
-    {
-        $model = new Concurso();
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id_concurso' => $model->id_concurso]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Concurso model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id_concurso Id Concurso
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id_concurso)
-    {
-        $model = $this->findModel($id_concurso);
-
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id_concurso' => $model->id_concurso]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Concurso model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id_concurso Id Concurso
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id_concurso)
-    {
-        $this->findModel($id_concurso)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Concurso model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id_concurso Id Concurso
-     * @return Concurso the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id_concurso)
-    {
-        if (($model = Concurso::findOne(['id_concurso' => $id_concurso])) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-
-    public function actionArea()
-    {
-        $parameter = Yii::$app->request->post('facultad');
-        $area = AreaDepartamento::find()
-        ->where(['id_facultad' => $parameter])
-        ->orderBy(['descripcion_area_departamento' => SORT_ASC])
-        ->all();
-        return Json::encode($area);
-    }
-
-    public function actionFormulario($id)
-    {
-        $dataProvider = Concurso::find()->where(['id_concurso' => $id])->one();
-        return $this->renderPartial('_formulario', [
-            'model' => $dataProvider,
-        ]);
-    }
-
-    public function actionTramite($ua='%',$ar='%')
-    {
-        $searchModel = Concurso::find();
-        $dataProvider = new ActiveDataProvider([
-            'query' => Concurso::find(),
-            'sort' => [
-                'defaultOrder' => [
-                    'id_concurso' => SORT_DESC,
-                ]
-            ],
-            
-        ]);
-        $facultad = Facultad::find("id_facultad","nombre_facultad")->orderBy(['nombre_facultad' => SORT_ASC])->all();
-        return $this->render('tramite', [
-            'model' => $dataProvider,
-            'searchModel' => $searchModel,
-            'facultad' => $facultad,
-            'ua' => $ua,
-            'ar' => $ar
-        ]);
     }
 }

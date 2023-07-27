@@ -116,7 +116,7 @@ use yii\helpers\Url;
                             <?= $form->field(
                                 $model,
                                 'username',
-                                ['inputOptions' => ['style' => 'border-radius:10px;background-color:transparent;width:300px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-cestartnter form-control', 'tabindex' => '1', 'placeholder' => 'Nº de documento']]
+                                ['inputOptions' => ['id' => 'usernameinput' , 'style' => 'border-radius:10px;background-color:transparent;width:300px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-cestartnter form-control', 'tabindex' => '1', 'placeholder' => 'Nº de documento']]
                             )->label(false)->textInput(['type' => 'number']) ?>
 
                             <!-- cuil -->                            
@@ -124,7 +124,7 @@ use yii\helpers\Url;
                             <?= $form->field(
                                 $model,
                                 'cuil',
-                                ['inputOptions' => ['style' => 'border-radius:10px;background-color:transparent;width:300px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-cestartnter form-control', 'tabindex' => '1', 'placeholder' => 'CUIL']]
+                                ['inputOptions' => ['id' => 'cuilinput' , 'style' => 'border-radius:10px;background-color:transparent;width:300px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-cestartnter form-control', 'tabindex' => '1', 'placeholder' => 'CUIL']]
                             )->label(false)->textInput(['type' => 'number']) ?>
 
                             <!-- email -->                            
@@ -167,3 +167,26 @@ use yii\helpers\Url;
         </div>
     </div>
 </div>
+
+<?php
+$js = <<< JS
+$(document).ready(function() {
+    $("#usernameinput").on("input", function() {
+        var maxLength = 12;
+        if ($(this).val().length > maxLength) {
+            $(this).val($(this).val().slice(0, maxLength));
+        }
+    });
+});
+
+$(document).ready(function() {
+    $("#cuilinput").on("input", function() {
+        var maxLength = 12;
+        if ($(this).val().length > maxLength) {
+            $(this).val($(this).val().slice(0, maxLength));
+        }
+    });
+});
+JS;
+$this->registerJs($js);
+?>

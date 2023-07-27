@@ -47,8 +47,7 @@ tests/_support/_generated
 /.vagrant
 
 
-assets/*
-!assets/.gitignore
 protected/runtime/*
 !protected/runtime/.gitignore
 protected/data/*.db
+/config

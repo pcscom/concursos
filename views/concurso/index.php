@@ -18,6 +18,9 @@ use app\models\ConcursoAsignatura;
 use app\models\Asignatura;
 use app\models\Dedicacion;
 
+use setasign\Fpdi\Fpdi;
+use yii\helpers\FileHelper;
+
 $this->title = 'Concursos';
 ?>
 <link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
@@ -45,6 +48,16 @@ $this->title = 'Concursos';
         justify-content: center;
     }
 
+    .authbutton {
+        background-color: #40BB97;
+        font-weight: 600;
+        color: white;        
+        border-radius:5px;
+        text-decoration: none;
+        width:200px;
+        border: 2px solid #40BB97;
+        padding: 10px 20px;
+    }
 </style>
 
 <div class="site-index">
@@ -86,6 +99,7 @@ $this->title = 'Concursos';
                 disabled>
                 </select>
                 <p class="mx-4 areas" style="font-size:18px;font-weight:400;height:15px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></p>
+                <p class="mx-4" style="font-size:18px;font-weight:400;height:15px">Área</p>
             </div>
 
             <div class="mt-2" style="display: flex;flex-direction:row-reverse;width: 100%;">
@@ -98,16 +112,23 @@ $this->title = 'Concursos';
         </div>
 
         <!-- BOTONES -->
+        <?php $emptymessage=(Concurso::find()->where(['<=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['>=', 'fecha_inicio_inscripcion', '2020-01-01'])->andWhere(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->count())?'none':'block'; ?>
+        <H4 id="emptymessage" style="display:<?= $emptymessage ?>">No se encontraron llamados activos.</H4>
+
         <div class="pt-4" style="display:flex;flex-wrap:wrap;width: 934px;flex-direction:row;">
             <?php 
-                $botones=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_categoria',$ar,false])->groupBy('id_facultad')->all();
-                foreach ($botones as $boton): 
-            ?>
+                $botones=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['<=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['>=', 'fecha_inicio_inscripcion', '2020-01-01'])->groupBy('id_facultad')->all();
+                foreach ($botones as $boton): ?>
+                
+                <?php 
+                $activos=Concurso::find()->where(['like','id_facultad',$boton['id_facultad'],false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['<=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['>=', 'fecha_inicio_inscripcion', '2020-01-01'])->count();//date('Y-m-d')])->count();
+                if ( $activos > 0) : 
+                ?>
                 <?php $href="concurso?ua=".$boton['id_facultad']."&ar=".$ar ?>
                 <a href="<?=$href?>" style="cursor:pointer;text-decoration:none;width:45%">
                     <div class="py-2" style="display:flex;flex-direction:row;">
                         <div class="boton">
-                            <span><?php echo(Concurso::find()->where(['like','id_facultad',$boton['id_facultad'],false])->andWhere(['like','id_categoria',$boton['id_categoria'],false])->count())?></span>
+                            <span><?= $activos ?></span>
                         </div>
                         <div style="display:flex;flex-direction:column;justify-content: center;">
                             <h5 class="mx-4 my-0" style="display: flex;flex-direction: column;justify-content: center;"><?php echo(Facultad::find()->where(['id_facultad' => $boton['id_facultad']])->one()->nombre_facultad)?></h5>
@@ -118,11 +139,12 @@ $this->title = 'Concursos';
                         </div>
                     </div>
                 </a>
+                <?php endif ?>
             <?php endforeach; ?>
         </div>
         <?php if($ua!='%'): ?>
             <!-- GRID -->
-            <div class="pt-4" style="display:flex;width: 934px;flex-direction:column;">
+            <div class="pt-4" style="display:<?= ($emptymessage=='none')?'flex':'none' ?>;width: 934px;flex-direction:column;">
             <table>
                 <tr>
                     <th style="text-align: center;vertical-align: middle;width:100px">Área</td>
@@ -135,11 +157,17 @@ $this->title = 'Concursos';
                     <th style="text-align: center;vertical-align: middle;width:80px"></td>
                 </tr>
                 <?php 
-                    $concursos=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_categoria',$ar,false])->groupBy('id_facultad')->all();
+                    try{
+                        $activos=Concurso::find()->where(['like','id_facultad',$boton['id_facultad'],false])->andWhere(['IN', 'id_concurso', $preinscripto])->andWhere(['<=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['>=', 'fecha_inicio_inscripcion', '2020-01-01'])->count();//date('Y-m-d')])->count();
+                    } 
+                    catch(\Throwable $e){
+                        $activos=0;
+                    }                    
+                    $concursos=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['<=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['>=', 'fecha_inicio_inscripcion', '2020-01-01'])->orderBy(['fecha_inicio_inscripcion' => SORT_DESC])->all();
                     foreach ($concursos as $concurso): 
                 ?>
                     <tr>
-                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></th>
+                        <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->andWhere(['id_facultad' => $concurso['id_facultad']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></th>
                         <?php 
                             try{
                                 $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $concurso['id_concurso']])->one()->id_asignatura;
@@ -153,21 +181,25 @@ $this->title = 'Concursos';
                         <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (Categoria::find()->where(['id_categoria' => $concurso['id_categoria']])->one()->descripcion_categoria);} catch(\Throwable $e){echo ('');}?></th>
                         <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (Dedicacion::find()->where(['id_dedicacion' => $concurso['id_dedicacion']])->one()->descripcion_dedicacion);} catch(\Throwable $e){echo ('');} ?></th>
                         <td style="text-align: center;vertical-align: middle;width:70px"><?=$concurso['cantidad_de_puestos']?></th>
-                        <td style="text-align: center;vertical-align: middle;width:150px">Desde <br><?=$concurso['fecha_inicio_inscripcion']?> <br>Hasta <br><?=$concurso['fecha_fin_inscripcion']?></th>
+                        <td style="text-align: center;vertical-align: middle;width:150px">Desde <br><?=date("d-m-Y H:i", strtotime($concurso['fecha_inicio_inscripcion']))?> <br>Hasta <br><?=date("d-m-Y H:i", strtotime($concurso['fecha_fin_inscripcion']))?></th>
                         <td style="text-align: center;vertical-align: middle;width:100px"><?=$concurso['numero_expediente']?></td>
                         <td style="width:70px;"> 
                             <div class="col" style="display:grid;justify-content: center;">
-                                <div class="row ml-2 my-2">
+                                <div class="row ml-2 my-2" style="justify-content:center">
                                     <div class="btn btn-block vermas"
                                     value="<?=$concurso['id_concurso']?>"
-                                    style="text-align: center;color:white;width:80px;background-color:#40BB97;font-weight:600;font-size:10px">
+                                    style="text-align: center;color:white;width:100px;background-color:#40BB97;font-weight:600;font-size:10px">
                                         Ver más
                                     </div>
                                 </div>
                                 <div class="row ml-2 my-2">
-                                    <div class="btn btn-block" style="text-align: center;color:white;width:80px;background-color:#40BB97;font-weight:600;font-size:10px">
-                                        Formulario
-                                    </div>
+                                    <a style="text-decoration: none;" href="profile?cid=<?= $concurso['id_concurso'] ?>">
+                                        <div class="btn btn-block" 
+                                            style="text-align: center;color:white;width:100px;background-color:#40BB97;font-weight:600;font-size:10px"
+                                        >
+                                            Preinscribirse
+                                        </div>
+                                    </a>
                                 </div>
                             </div>               
                         </td>
@@ -183,12 +215,40 @@ $this->title = 'Concursos';
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal fade modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- VER MAS MODAL -->
+    <div class="modal fade modal-lg" id="vermasModal" tabindex="-1" role="dialog" aria-labelledby="vermasModalModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-            <div class="modal-body" id="modalform" style="background-color: #F5F5F5;">
+                <div class="modal-body" id="modalform" style="background-color: #F5F5F5;">
+                </div>
             </div>
+        </div>
+    </div>
+    <!-- PREINSCRIPCION MODAL -->
+    <div class="modal fade modal-lg" id="preinscripcionModal" tabindex="-1" role="dialog" aria-labelledby="preinscripcionModalModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body" id="inscmodalform" style="background-color: #F5F5F5;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- LOGIN MODAL -->
+    <div class="modal fade modal-lg" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #F5F5F5;display:flex;flex-direction:row-reverse">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar" style="border:none;background-color:transparent"
+                    onClick="$('#loginModal').modal('hide');">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center" style="background-color: #F5F5F5;">
+                <h3>Para poder preinscribirse, primero debe registrarse.</h3>
+                </div>
+                <div class="modal-footer" style="background-color: #F5F5F5;">
+                    <a href="<?=Url::to(['/user/security/login'])?>" class=" text-center authbutton">INICIAR SESIÓN</a>
+                </div>
             </div>
         </div>
     </div>
@@ -246,12 +306,32 @@ $this->title = 'Concursos';
 ?>
 
 <?php
-    $this->registerJs("
+    $js = <<< JS
     $('.vermas').on('click', function (event) {
         let id=$(this).attr('value')
         event.preventDefault();
         $('#modalform').load('concurso/formulario?id='+id);
-        $('#exampleModal').modal('show');
-      })
-    ",$this::POS_READY);
+        $('#vermasModal').modal('show');
+    })
+
+    $('.preinscribirse').on('click', function(event) {
+        var concursoid = $(this).attr('value');
+        var id = $(this).data("id");
+        event.preventDefault();
+        if(id){
+            $.ajax({
+            type: 'POST',
+            url: 'concurso/previsualizar',
+            data: { id: concursoid },
+            }).done(function(response) {
+                $('#inscmodalform').load('concurso/preinscripcion?id='+concursoid);
+                $('#preinscripcionModal').modal('show');
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('La solicitud falló:', errorThrown);
+                location.reload();
+            });
+        }
+    });
+    JS;
+    $this->registerJs($js);
 ?>

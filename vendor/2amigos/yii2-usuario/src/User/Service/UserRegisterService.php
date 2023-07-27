@@ -43,7 +43,8 @@ class UserRegisterService implements ServiceInterface
         $model = $this->model;
 
         if ($model->getIsNewRecord() === false) {
-            throw new InvalidCallException('Cannot register user from an existing one.');
+            return false;
+            // throw new InvalidCallException('Cannot register user from an existing one.');
         }
 
         $transaction = $model::getDb()->beginTransaction();
@@ -91,7 +92,6 @@ class UserRegisterService implements ServiceInterface
         } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error($e->getMessage(), 'usuario');
-
             return false;
         }
     }

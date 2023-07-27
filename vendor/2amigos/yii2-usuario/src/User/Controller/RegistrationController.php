@@ -123,16 +123,17 @@ class RegistrationController extends Controller
 
             $user->setScenario('register');
             $mailService = MailFactory::makeWelcomeMailerService($user);
-    //             var_dump($profile->validate());
+                // var_dump($profile->validate());
     // var_dump($profile->errors);
+
             if (($this->make(UserRegisterService::class, [$user, $mailService])->run())){//&&($profile->save(false))) {
+
                 $profile = Profile::findOne($user->id);
-                $profile->numero_documento = $form->numero_documento;
+                $profile->numero_documento = $form->username;
                 $profile->nombre = $form->nombre;
                 $profile->apellido = $form->apellido;
                 $profile->cuil = $form->cuil;
                 $profile->email = $form->email;
-
                 if($profile->save(false))
                 {
                     // var_dump($user);

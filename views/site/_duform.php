@@ -25,7 +25,7 @@ use yii\widgets\Pjax;
             </div>
         </div>
         <div class="col" style="width: 600px;">
-            <div class="row"><b>Informes y confirmación de inscripción</b></div>
+            <div class="row"><b>Informes</b></div>
             <div class="row ml-4"><b style="font-weight:200"><?=$model->informacion_inscripcion?></div>
         </div>
     </div>

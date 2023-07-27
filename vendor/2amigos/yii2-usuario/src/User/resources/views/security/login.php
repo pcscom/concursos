@@ -36,7 +36,7 @@ use yii\widgets\MaskedInput;
         width: 0;
         height: 0;
         border-top: 650px solid transparent;
-        border-left: 800px solid white;
+        border-left: 1100px solid white;
         position: absolute;
         left: 0;
     }
@@ -57,7 +57,7 @@ use yii\widgets\MaskedInput;
 </style>
 <div class="triangle"></div>
 
-<div class="row" style="margin-top:100px">
+<div class="row" style="margin-top:100px;">
     <div class="col" style="justify-content:center">
         <div class="row" style="max-width:fit-content;margin: 0 auto;">
             <div class="col mx-0 px-0" style="border:transparent">
@@ -96,8 +96,8 @@ use yii\widgets\MaskedInput;
                             <?= $form->field(
                                 $model,
                                 'login',
-                                ['inputOptions' => ['style' => 'border-radius:10px;background-color:transparent;width:250px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-center form-control', 'tabindex' => '1', 'placeholder' => 'Nº de documento']]
-                            )->label(false)->textInput() ?>
+                                ['inputOptions' => ['id' => 'usernameinput', 'style' => 'border-radius:10px;background-color:transparent;width:250px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'text-center form-control', 'tabindex' => '1', 'placeholder' => 'Nº de documento']]
+                            )->label(false)->textInput(['type' => 'number']); ?>
 
                             <?= $form
                                 ->field(
@@ -129,3 +129,18 @@ use yii\widgets\MaskedInput;
         ) ?>
     </div>
 </div>
+
+
+<?php
+$js = <<< JS
+$(document).ready(function() {
+    $("#usernameinput").on("input", function() {
+        var maxLength = 12;
+        if ($(this).val().length > maxLength) {
+            $(this).val($(this).val().slice(0, maxLength));
+        }
+    });
+});
+JS;
+$this->registerJs($js);
+?>
