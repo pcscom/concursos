@@ -34,6 +34,11 @@ use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use Da\User\Model\Profile;
+use Da\User\Query\UserQuery;
+use Da\User\Model\Passwordchange;
+use Da\User\Helper\SecurityHelper;
+use yii\helpers\Url;
 
 class SecurityController extends Controller
 {
@@ -76,7 +81,7 @@ class SecurityController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['login', 'auth', 'logout'],
+                        'actions' => ['login', 'auth', 'logout', 'password'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -270,5 +275,80 @@ class SecurityController extends Controller
         }
 
         $this->make(SocialNetworkAccountConnectService::class, [$this, $client])->run();
+    }
+
+    public function actionPassword()
+    {
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+
+
+        if ($profile === null) {
+            $profile = $this->make(Profile::class);
+            $profile->link('user', Yii::$app->user->identity);
+        }
+
+        /** @var ProfileEvent $event */
+        // $event = $this->make(ProfileEvent::class, [$profile]);
+
+        // $this->make(AjaxRequestModelValidator::class, [$profile])->validate();
+
+
+        $user = User::findOne(Yii::$app->user->identity->getId());
+
+        if ($profile === null) {
+            throw new NotFoundHttpException();
+        }
+
+        //if ($profile->load(Yii::$app->request->post()) && $profile->save()) {}
+        
+        if (Yii::$app->request->post()) 
+        {
+            $data=Yii::$app->request->post();
+            if (($data ["Passwordchange"] ["oldpass"] == '')||(!Yii::$app->getSecurity()->validatePassword($data ["Passwordchange"] ["oldpass"], $user->password_hash))) 
+            {
+                Yii::$app->getSession()->setFlash('danger','La contraseña actual es inválida');
+            }
+            elseif (($data ["Passwordchange"] ["newpass"]) != ($data ["Passwordchange"] ["newpassagain"]))
+            {
+                Yii::$app->getSession()->setFlash('danger','Las contraseñas nuevas no coinciden');
+            }
+            elseif (strlen($data ["Passwordchange"] ["newpass"]) < 8)
+            {
+                Yii::$app->getSession()->setFlash('danger','Las contraseña debe tener al menos 8 caracteres');
+            }
+            else //cambio de password
+            {
+
+                //envio por mail
+                // list($enviar) = Yii::$app->createController('correos'); 
+                // $enviar->nuevapassword($profile->firstname,$user->email,$data ["Passwordchange"] ["newpassagain"]);
+
+                $user->password_hash = $data ["Passwordchange"] ["newpassagain"];
+                $security = $this->make(SecurityHelper::class);
+                $user->auth_key = $security->generateRandomString();
+                $user->registration_ip = Yii::$app->request->getUserIP();
+                $user->password_hash = $security->generatePasswordHash($data ["Passwordchange"] ["newpassagain"], $this->getModule()->blowfishCost);
+                $user->password_changed_at = time();
+                $user->save();
+                // Yii::$app->session->setFlash(\dominus77\sweetalert2\Alert::TYPE_SUCCESS, [
+                //     [
+                //         'text' => 'La contraseña fue modificada con éxito',
+                //         'confirmButtonText' => 'Entendido',
+                //      ]]);
+                //logout
+                // Yii::$app->user->logout();
+                return Yii::$app->response->redirect(Url::base().'/user/login');
+            }
+        }
+
+        $pass = new Passwordchange;
+        return $this->render(
+            'password',
+            [
+                'model' => $profile,
+                'user' => $user,
+                'pass'=> $pass
+            ]
+        );
     }
 }

@@ -84,7 +84,11 @@ $this->title = 'Profile';
                     </div>
                 </div>
             </div>
-
+            <div id="passworddiv" class="mt-4" style="align-items:center;display:flex;flex-direction:column;width:300px;">
+                <button  id="password" class="mt-2 btn btn-block" style="color:white;background-color:#FFC161;width:300px;font-weight:600;border:none" type="button">Cambiar contraseña</button>
+                <div id='passwordcontentdiv'>             
+                </div>
+            </div>
 
             <!-- FORMULARIO -->
 
@@ -547,6 +551,26 @@ $this->title = 'Profile';
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel">Atención</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Si continúa perderá los cambio no guardados.</p>
+        <p style="font-weight:400">¿Estás seguro de que deseas continuar?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="confirmButton">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
     function changeColor(btn) {
         // obtenemos todos los botones con la clase "color-btn" onclick="changeColor(this)"
@@ -565,11 +589,13 @@ $this->title = 'Profile';
         {
             $('#formulariodiv').css('display', 'none');
             $('#perfildiv').css('display', 'flex');
+            $('#passworddiv').css('display', 'flex');
         }
         else
         {
             $('#perfildiv').css('display', 'none');
             $('#formulariodiv').css('display', 'flex');
+            $('#passworddiv').css('display', 'none');
         }
 
     }
@@ -577,6 +603,25 @@ $this->title = 'Profile';
 
 <?php
     $js = <<< JS
+    $('#password').on('click', function (event) {
+        event.preventDefault();
+        if ($("#passworddiv").is(":visible")) {
+            $('#confirmationModal').modal('show');
+            // $('#passwordcontentdiv').toggle(); 
+        }
+    });
+
+    $('#confirmButton').on('click', function (event) {
+        window.location.href = 'user/security/password'; 
+    });
+
+    $('.vermas').on('click', function (event) {
+        let id=$(this).attr('value')
+        event.preventDefault();
+        $('#modalform').load('concurso/formulario?id='+id);
+        $('#vermasModal').modal('show');
+    })
+
     $('.delete_file').on('click', function(event) {
         event.preventDefault();
         var value = $(this).data('value');
@@ -593,6 +638,7 @@ $this->title = 'Profile';
     });
 
     $(document).ready(function() {
+
         $("#cuilinput").on("input", function() {
             var maxLength = 12;
             if ($(this).val().length > maxLength) {

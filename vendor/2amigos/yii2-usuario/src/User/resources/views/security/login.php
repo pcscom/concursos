@@ -85,13 +85,13 @@ use yii\widgets\MaskedInput;
                         ) ?>
                         <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;">
                         
-                            <div style="display:flex;flex-direction:row-reverse;margin-bottom: 20px;">
+                            <!-- <div style="display:flex;flex-direction:row-reverse;margin-bottom: 20px;">
                                 <select name="documento" class="text-center" id="doctipo" style="position: relative;bottom:auto;height:30px;width:120px;border:1px solid black;border-radius:10px;background-color:transparent">
                                     <option value="dni">DNI</option>
                                     <option value="CUIL">CUIL</option>
                                 </select>
                                 <p style="margin:0;margin-right:10px;font-weight:500">Tipo de Documento</p>
-                            </div>
+                            </div> -->
 
                             <?= $form->field(
                                 $model,

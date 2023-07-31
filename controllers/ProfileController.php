@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use yii\filters\AccessControl;
 use app\models\Profile;
 use app\models\ProfileQuery;
 use app\models\Adjuntos;
@@ -24,6 +24,8 @@ use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\Fpdf\Fpdf;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use Da\User\Model\Passwordchange;
+
 /**
  * ProfileController implements the CRUD actions for Profile model.
  */
@@ -32,20 +34,20 @@ class ProfileController extends Controller
     /**
      * @inheritDoc
      */
-    // public function behaviors()
-    // {
-    //     return array_merge(
-    //         parent::behaviors(),
-    //         [
-    //             'verbs' => [
-    //                 'class' => VerbFilter::className(),
-    //                 'actions' => [
-    //                     'delete' => ['POST'],
-    //                 ],
-    //             ],
-    //         ]
-    //     );
-    // }
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     /**
      * Lists all Profile models.
@@ -364,4 +366,5 @@ class ProfileController extends Controller
             }
         return false;
     }
+
 }
