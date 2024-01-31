@@ -53,7 +53,7 @@ use Da\User\Model\User;
  */
 class Profile extends \yii\db\ActiveRecord
 {
-    public string $cid;
+    public string $cid = '0';
 
     /**
      * {@inheritdoc}
@@ -66,17 +66,18 @@ class Profile extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id'], 'required'],
+            [['numero_documento','user_id','apellido', 'nombre', 'email', 'cuil','nacimiento_localidad', 'nacimiento_expedido', 'nacimiento_pais', 'domicilio_calle', 'domicilio_numero', 'domicilio_codigo_postal', 'domicilio_localidad', 'domicilio_provincia', 'domicilio_pais', 'nacimiento_fecha', 'estado_civil', 'numero_celular_sms'], 'required'],
             [['user_id', 'gdpr_consent'], 'integer'],
-            [['nacimiento_fecha'], 'safe'],
-            [['antecedentes_docentes', 'antecedentes_cientificos', 'cursos', 'congresos', 'actuacion_universidades', 'formacion_rrhh', 'sintesis_aportes', 'sintesis_profesional', 'otros_antecedentes', 'labor_docente', 'renovacion'], 'string'],
+            [['titulos_obtenidos','antecedentes_docentes', 'antecedentes_cientificos', 'cursos', 'congresos', 'actuacion_universidades', 'formacion_rrhh', 'sintesis_aportes', 'sintesis_profesional', 'otros_antecedentes', 'labor_docente', 'renovacion','cargo_actual'], 'string'],
             [['numero_documento'], 'string', 'max' => 12],
             [['apellido', 'nombre', 'email'], 'string', 'max' => 100],
-            [['numero_legajo', 'id_trato', 'proveedor_celular'], 'string', 'max' => 10],
-            [['sexo'], 'string', 'max' => 1],
+            [['numero_legajo', 'id_trato'], 'string', 'max' => 50],
+            [['proveedor_celular'], 'string', 'max' => 10],
+            [['domicilio_codigo_postal'], 'string', 'max' => 8],
+            [['domicilio_codigo_postal'], 'string', 'min' => 8],
+            [['sexo'], 'string', 'max' => 20],
             [['numero_celular_sms'], 'string', 'max' => 15],
             [['cuil', 'estado_civil', 'conyuge', 'madre', 'padre', 'nacimiento_localidad', 'nacimiento_expedido', 'nacimiento_pais', 'domicilio_calle', 'domicilio_numero', 'domicilio_piso', 'domicilio_departamento', 'domicilio_codigo_postal', 'domicilio_localidad', 'domicilio_provincia', 'domicilio_pais'], 'string', 'max' => 45],
-            [['titulos_obtenidos'], 'string', 'max' => 255],
             [['user_id'], 'unique'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['cid'], 'safe'],
@@ -106,18 +107,18 @@ class Profile extends \yii\db\ActiveRecord
             'conyuge' => Yii::t('app', 'Conyuge'),
             'madre' => Yii::t('app', 'Madre'),
             'padre' => Yii::t('app', 'Padre'),
-            'nacimiento_localidad' => Yii::t('app', 'Nacimiento Localidad'),
-            'nacimiento_fecha' => Yii::t('app', 'Nacimiento Fecha'),
-            'nacimiento_expedido' => Yii::t('app', 'Nacimiento Expedido'),
-            'nacimiento_pais' => Yii::t('app', 'Nacimiento Pais'),
-            'domicilio_calle' => Yii::t('app', 'Domicilio Calle'),
-            'domicilio_numero' => Yii::t('app', 'Domicilio Numero'),
-            'domicilio_piso' => Yii::t('app', 'Domicilio Piso'),
-            'domicilio_departamento' => Yii::t('app', 'Domicilio Departamento'),
-            'domicilio_codigo_postal' => Yii::t('app', 'Domicilio Codigo Postal'),
-            'domicilio_localidad' => Yii::t('app', 'Domicilio Localidad'),
-            'domicilio_provincia' => Yii::t('app', 'Domicilio Provincia'),
-            'domicilio_pais' => Yii::t('app', 'Domicilio Pais'),
+            'nacimiento_localidad' => Yii::t('app', 'Localidad de Nacimiento'),
+            'nacimiento_fecha' => Yii::t('app', 'Fecha de Nacimiento'),
+            'nacimiento_expedido' => Yii::t('app', 'Provincia de Nacimiento'),
+            'nacimiento_pais' => Yii::t('app', 'País de Nacimiento'),
+            'domicilio_calle' => Yii::t('app', 'Calle de Domicilio'),
+            'domicilio_numero' => Yii::t('app', 'Numero de Domicilio'),
+            'domicilio_piso' => Yii::t('app', 'Piso de Departamenti'),
+            'domicilio_departamento' => Yii::t('app', 'Número de Departamento'),
+            'domicilio_codigo_postal' => Yii::t('app', 'Codigo Postal'),
+            'domicilio_localidad' => Yii::t('app', 'Localidad de Domicilio'),
+            'domicilio_provincia' => Yii::t('app', 'Provincia de Domicilio'),
+            'domicilio_pais' => Yii::t('app', 'Pais de Domicilio'),
             'titulos_obtenidos' => Yii::t('app', 'Titulos Obtenidos'),
             'antecedentes_docentes' => Yii::t('app', 'Antecedentes Docentes'),
             'antecedentes_cientificos' => Yii::t('app', 'Antecedentes Cientificos'),
@@ -130,6 +131,7 @@ class Profile extends \yii\db\ActiveRecord
             'otros_antecedentes' => Yii::t('app', 'Otros Antecedentes'),
             'labor_docente' => Yii::t('app', 'Labor Docente'),
             'renovacion' => Yii::t('app', 'Renovacion'),
+            'cargo_actual' => Yii::t('app', 'Cargo Actual'),
             'cid' => Yii::t('app', 'cid'),
         ];
     }

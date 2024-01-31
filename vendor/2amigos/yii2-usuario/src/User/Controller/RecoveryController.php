@@ -85,6 +85,7 @@ class RecoveryController extends Controller
      */
     public function actionRequest()
     {
+        $confirmationModal=false;
         if (!$this->module->allowPasswordRecovery) {
             throw new NotFoundHttpException();
         }
@@ -105,16 +106,10 @@ class RecoveryController extends Controller
                 $this->trigger(FormEvent::EVENT_AFTER_REQUEST, $event);
             }
 
-            return $this->render(
-                '/shared/message',
-                [
-                    'title' => Yii::t('usuario', 'Recovery message sent'),
-                    'module' => $this->module,
-                ]
-            );
+            $confirmationModal=true;
         }
 
-        return $this->render('request', ['model' => $form]);
+        return $this->render('request', ['model' => $form, 'confirmationModal' => $confirmationModal]);
     }
 
     /**
@@ -167,14 +162,14 @@ class RecoveryController extends Controller
                 $this->trigger(ResetPasswordEvent::EVENT_AFTER_RESET, $event);
 
                 Yii::$app->session->setFlash('success', Yii::t('usuario', 'Password has been changed'));
-
-                return $this->render(
-                    '/shared/message',
-                    [
-                        'title' => Yii::t('usuario', 'Password has been changed'),
-                        'module' => $this->module,
-                    ]
-                );
+return;
+                // return $this->render(
+                //     '/shared/message',
+                //     [
+                //         'title' => Yii::t('usuario', 'Password has been changed'),
+                //         'module' => $this->module,
+                //     ]
+                // );
             }
         }
 

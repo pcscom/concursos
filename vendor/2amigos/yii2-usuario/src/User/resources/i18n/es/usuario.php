@@ -29,7 +29,7 @@ return [
     'Account details have been updated' => 'Se han actualizado los detalles de la cuenta',
     'Account settings' => 'Configuración de la cuenta',
     'Already registered? Sign in!' => '¿Ya está registrado? ¡Inicie sesión!',
-    'An email with instructions to create a new password has been sent to {email} if it is associated with an {appName} account. Your existing password has not been changed.' => 'Se ha enviado un correo electrónico con instrucciones para crear una nueva contraseña a {email} si está asociado con la cuenta {appName}. Su contraseña actual no ha sido modificada.',
+    'An email with instructions to create a new password has been sent to {email} if it is associated with an {appName} account. Your existing password has not been changed.' => 'Se ha enviado un correo electrónico con instrucciones para crear una nueva contraseña a {email}, si está asociado a una cuenta. Su contraseña actual no ha sido modificada.',
     'An error occurred processing your request' => 'Se ha producido un error al procesar su solicitud',
     'Are you sure you want to block this user?' => '¿Seguro que desea bloquear a este usuario?',
     'Are you sure you want to confirm this user?' => '¿Seguro que desea confirmar a este usuario?',

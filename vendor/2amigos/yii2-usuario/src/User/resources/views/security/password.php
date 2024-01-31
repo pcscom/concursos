@@ -128,7 +128,21 @@ use user\model\Passwordchange;
                                 'style' => 'width:150px;background-color:#40BB97;font-weight:600',
                                 'method' => 'post'
                                 ]) ?>
-                        </div>        
+                        </div>   
+                    </div>
+                    <div style="position: absolute;bottom: 5%;left: 10%;">
+                        <div style="display:flex;flex-direction:row;width: 80%;">
+                                <p style="text-decoration: none;color:black;font-weight: 200;font-family: Helvetica;">Su nueva contraseña debe tener al menos 8 caracteres. Se recomienda, por seguridad, tener en cuenta las siguientes pautas:</p>
+                        </div>  
+                        <div style="display:flex;flex-direction:row;width: 80%;">
+                                <p style="text-decoration: none;color:black;font-weight: 200;font-family: Helvetica;">- Utilizar mayúsculas y minúsculas</p>
+                        </div>  
+                        <div style="display:flex;flex-direction:row;width: 80%;">
+                                <p style="text-decoration: none;color:black;font-weight: 200;font-family: Helvetica;">- Utilizar letras y números</p>
+                        </div>  
+                        <div style="display:flex;flex-direction:row;width: 80%;">
+                                <p style="text-decoration: none;color:black;font-weight: 200;font-family: Helvetica;">- Utilizar caracteres especiales</p>
+                        </div> 
                     </div>
                 </div>
             </div>

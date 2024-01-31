@@ -54,7 +54,7 @@ Html::cssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/al
                 . Html::endForm()
                 . '</li>',
                 [
-                    'label' => '<p style="margin-bottom:0;color:black">Páginas</p>',
+                    'label' => '<p style="margin-bottom:0;color:black">Menú</p>',
                     'visible' => !Yii::$app->user->isGuest,
                     'items' => [
                         ['label' => 'Mi perfil', 'url' => ['/profile']],

@@ -113,6 +113,7 @@ use yii\widgets\MaskedInput;
                                     ['class' => 'btn btn-block', 'style'=>'width:150px;background-color:#40BB97;font-weight:600','tabindex' => '3']
                                 ) ?>
                             </div>
+                            <a href="<?=Url::to(['/user/forgot'])?>" class="mt-3" style="text-decoration: none;color:black;font-weight: 200;font-family: Helvetica;">¿Olvidó su contraseña?</a>
 
                         </div>
 

@@ -5,6 +5,7 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
+    'language' => 'es', // Set the language here
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
@@ -114,7 +115,7 @@ $config = [
             ],
         ],
         'user' => [
-            'authTimeout' => 1200,   // segundos
+            'authTimeout' => 1800,   // segundos
         ],
     ],
     'params' => $params,

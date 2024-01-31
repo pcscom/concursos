@@ -39,7 +39,7 @@ class ConcursoController extends Controller
                     'class' => AccessControl::class,
                     'rules' => [
                         [
-                            'actions' => ['confirmar','descargar','previsualizar','preinscripcion','index','view','create','update','delete','area','formulario','tramite'],
+                            'actions' => ['confirmar','descargar','previsualizar','preinscripcion','index','view','create','update','delete','area','formulario','tramite','desinscribir'],
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -77,7 +77,7 @@ class ConcursoController extends Controller
             try
             {
                 $adjuntos = FileHelper::findFiles('attachments/antecedentes', [
-                    'only' => [Yii::$app->user->id.'_' . '*' . 'pdf'],
+                    'only' => ['*' . $profile->cuil.'_' . '*' . 'pdf'],
                 ]);
                 $pdf = new Fpdi();
                 $width = $pdf->GetPageWidth('A4') - 20;
@@ -113,6 +113,11 @@ class ConcursoController extends Controller
                 $pdf->SetFont('Arial', 'B', 14, '', true, 'UTF-8');
                 $pdf->Cell(40, 10, 'Lugar y Fecha de Nacimiento', 0, 1); 
                 
+                $fecha_nacimiento_parts = explode('-', $profile->nacimiento_fecha);
+                if (count($fecha_nacimiento_parts) === 3) {
+                    $profile->nacimiento_fecha = $fecha_nacimiento_parts[2] . '/' . $fecha_nacimiento_parts[1] . '/' . $fecha_nacimiento_parts[0];
+                }
+
                 $pdf->SetFont('Arial', '', 12, '', true, 'UTF-8');
                 ($profile->nacimiento_fecha)&&$pdf->Cell(40, 10, 'Fecha Nacimiento: '.$profile->nacimiento_fecha, 0, 1);                              
                 ($profile->nacimiento_localidad)&&$pdf->Cell(40, 10, 'Localidad: '.$profile->nacimiento_localidad, 0, 1);                              
@@ -204,7 +209,7 @@ class ConcursoController extends Controller
                     Yii::$app->session->setFlash('error', 'El formulatio debe tener peso un máximo de 50MB');
                     return true;
                 }
-                $pdf->Output('attachments/formularios/'.Yii::$app->user->id.'_'.$id.'.pdf', 'F');
+                $pdf->Output('attachments/formularios/Recibo_Preinscripcion-'.$profile->cuil.'_'.$id.'.pdf', 'F');
             }
             catch(Exception $e)
             {
@@ -222,9 +227,10 @@ class ConcursoController extends Controller
         $preinscripto = new Preinscripto();
         $preinscripto->user_id = Yii::$app->user->id;
         $preinscripto->concurso_id = $id;
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
 
         $file = FileHelper::findFiles('attachments/formularios', [
-            'only' => [Yii::$app->user->id.'_' . $id . '*' . 'pdf'],
+            'only' => ['*' . $profile->cuil.'_' . $id . '*' . 'pdf'],
         ]);
 
         if ($this->request->isPost) 
@@ -274,6 +280,40 @@ class ConcursoController extends Controller
             readfile($rutaCompleta);
             exit;
         // } 
+    }
+
+    public function actionDesinscribir()
+    {
+        if ($this->request->isPost) 
+        {
+            try{
+                $pid = $_POST['pid'];
+
+                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+                $preinscripciones = Preinscripto::find()->where(['user_id' => Yii::$app->user->id, 'concurso_id' => $pid])->all(); 
+
+
+                foreach ($preinscripciones as $preinscripcion) {
+                    $concurso=Concurso::findOne(['id_concurso' => $preinscripcion->concurso_id]);
+                    $facultad = Facultad::findOne(['id_facultad' => $concurso->id_facultad]);
+
+
+                    $files = FileHelper::findFiles('attachments/formularios', [
+                        'only' => ['*' . $profile->cuil.'_' . $concurso->id_concurso . '*' . 'pdf'],
+                    ]);
+                    foreach ($files as $file) {
+                        FileHelper::unlink($file);
+                    }
+
+                    $preinscripcion->delete();
+
+                }
+                return json_encode(['success' => true]);
+            }
+            catch(Throwable $e){
+                return json_encode(['error' => false]);
+            }
+        }
     }
 
     public function actionIndex($ua='%',$ar='%')

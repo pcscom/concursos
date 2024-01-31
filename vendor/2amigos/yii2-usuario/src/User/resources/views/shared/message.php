@@ -25,3 +25,14 @@ $this->title = $title;
         'module' => $module,
     ]
 );
+?>
+<?php
+    $js = <<< JS
+        $(document).ready(function() {
+            setTimeout(function() {
+                window.history.back();
+            }, 3000); 
+        });
+    JS;
+    $this->registerJs($js);
+?>

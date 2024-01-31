@@ -67,17 +67,23 @@ use yii\helpers\Json;
             <div style="display:flex;flex-direction:column;min-width:70%">
                 <p style="font-weight:600;font-family:Helvetica">Asignatura/s</p>
             </div>    
-            <?php 
-                try{
-                    $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $model->id_concurso])->one()->id_asignatura;
-                    $asignatura=Asignatura::find()->where(['id_asignatura' => $id_asignatura])->one()->descripcion_asignatura;
-                } 
-                catch(\Throwable $e){
-                    $asignatura='';
-                }
-            ?>    
+            
             <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
-                <p style="font-weight:300;text-align:center;font-family:Helvetica"><?= $asignatura ?></p>
+                <?php 
+                    try{
+                        $concursoAsignaturas=ConcursoAsignatura::find()->where(['id_concurso' => $model->id_concurso])->all();
+                        $idAsignaturaArray = [];
+                        foreach ($concursoAsignaturas as $concursoAsignatura) {
+                            if ($concursoAsignatura instanceof ConcursoAsignatura): ?> 
+                                <p style="margin:0;font-weight:300;text-align:center;font-family:Helvetica"><?= Asignatura::find()->where(['id_asignatura' => $concursoAsignatura->id_asignatura])->one()->descripcion_asignatura; ?></p>
+                            <?php endif;
+                        }
+                    } 
+                    catch(\Throwable $e){
+                    }
+                ?>
+    
+            
             </div>
         </div>
         
@@ -130,12 +136,18 @@ use yii\helpers\Json;
 
         <div style="display:flex;flex-direction:row;align-items: center;margin-left:10px">
             <p style="font-weight:600;font-family:Helvetica;font-size: 15px;margin: 0;">Inicio inscripción</p>
-            <p style="font-weight:300;text-align:center;font-family:Helvetica;margin:0;margin-left: 10px;"><?= $model->fecha_inicio_inscripcion?></p>
+            <?php 
+                $fecha_inicio_inscripcion_sp = date('d/m/Y H:i', strtotime($model->fecha_inicio_inscripcion));
+            ?>
+            <p style="font-weight:300;text-align:center;font-family:Helvetica;margin:0;margin-left: 10px;"><?= $fecha_inicio_inscripcion_sp?></p>
         </div>
 
         <div style="display:flex;flex-direction:row;align-items: center;margin-left:10px">
-        <p style="font-weight:600;font-family:Helvetica;font-size: 15px;margin: 0;">Fin inscripción</p>
-        <p style="font-weight:300;text-align:center;font-family:Helvetica;margin:0;margin-left: 10px;"><?= $model->fecha_fin_inscripcion?></p>
+            <p style="font-weight:600;font-family:Helvetica;font-size: 15px;margin: 0;">Fin inscripción</p>
+            <?php 
+                $fecha_fin_inscripcion_sp = date('d/m/Y H:i', strtotime($model->fecha_fin_inscripcion));
+            ?>
+        <p style="font-weight:300;text-align:center;font-family:Helvetica;margin:0;margin-left: 10px;"><?= $fecha_fin_inscripcion_sp?></p>
     </div>
 
     </div>
@@ -147,6 +159,8 @@ use yii\helpers\Json;
     <hr style="border-bottom: 1px dotted gray;margin-top:4px;margin-bottom:4px;">
 
     <div style="display:flex;flex-direction:row;margin-top:10px">
-        <p style="font-family:Helvetica;font-weight:200;font-size: 10px;">Dirección de Concursos Docentes, Pabellón Central - Avenida San Martín 4453 - Ciudad Autónoma de Buenos Aires</p>
+        <p style="font-family:Helvetica;font-weight:200;font-size: 10px;">
+            <?php try{echo (Facultad::find()->where(['id_facultad' => $model->id_facultad])->one()->informacion_inscripcion);} catch(\Throwable $e){echo ('');} ?>
+        </p>
     </div>
 </div>
