@@ -46,6 +46,9 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
+#attachments
+web/attachments/antecedentes/*
+web/attachments/formularios/*
 
 protected/runtime/*
 !protected/runtime/.gitignore
