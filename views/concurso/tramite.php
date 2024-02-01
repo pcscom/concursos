@@ -165,9 +165,6 @@ $this->title = 'Concursos';
                             <td style="text-align: center;vertical-align: middle;width:100px"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->andWhere(['id_facultad' => $concurso['id_facultad']])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></th>
                             <?php 
                                 try{
-                                    // $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $concurso['id_concurso']])->one()->id_asignatura;
-                                    // $asignatura=Asignatura::find()->where(['id_asignatura' => $id_asignatura])->one()->descripcion_asignatura;
-                                    
                                     $concursoAsignaturas=ConcursoAsignatura::find()->where(['id_concurso' => $concurso['id_concurso']])->all();
                                     $idAsignaturaArray = [];
                                     foreach ($concursoAsignaturas as $concursoAsignatura) {
