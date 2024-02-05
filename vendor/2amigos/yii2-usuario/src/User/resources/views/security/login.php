@@ -144,4 +144,5 @@ $(document).ready(function() {
 });
 JS;
 $this->registerJs($js);
+
 ?>
