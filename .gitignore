@@ -50,7 +50,7 @@ tests/_support/_generated
 !web/attachments
 web/attachments/antecedentes/*
 web/attachments/formularios/*
-
+!web/attachments/formularios/tmp.pdf
 
 protected/runtime/*
 !protected/runtime/.gitignore
