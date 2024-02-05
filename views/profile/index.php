@@ -180,7 +180,7 @@ $this->title = 'Profile';
                                 <p class="my-0">Área</p>
                             </div>
                             <div class="ml-2" style="display:flex;align-items: center;">
-                                <p class="concurso_data"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso->id_area_departamento])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></p>
+                                <p class="concurso_data"><?php try{echo (AreaDepartamento::find()->where(['id_area_departamento' => $concurso->id_area_departamento])->andWhere(['id_facultad' => $concurso->id_facultad])->one()->descripcion_area_departamento);} catch(\Throwable $e){echo ('');} ?></p>
                             </div>
                         </div>
                         <div class="mb-2" style="display:flex;flex-direction:row">
@@ -189,13 +189,6 @@ $this->title = 'Profile';
                             </div>
                             <div class="wrap ml-2" style="flex-wrap:wrap;max-width:700px;display:flex;align-items: center;">
                                 <?php 
-                                    // try{
-                                    //     $id_asignatura=ConcursoAsignatura::find()->where(['id_concurso' => $concurso->id_concurso])->one()->id_asignatura;
-                                    //     $asignatura=Asignatura::find()->where(['id_asignatura' => $id_asignatura])->one()->descripcion_asignatura;
-                                    // } 
-                                    // catch(\Throwable $e){
-                                    //     $asignatura='';
-                                    // }
                                     try{
                                         $concursoAsignaturas=ConcursoAsignatura::find()->where(['id_concurso' => $concurso->id_concurso])->all();
                                         $idAsignaturaArray = [];
@@ -288,14 +281,6 @@ $this->title = 'Profile';
                                 $dataProvider,
                                 'numero_celular_sms',
                                 ['inputOptions' => ['style' => 'border-radius:10px;background-color:transparent;width:350px;border:1px solid black', 'autofocus' => 'autofocus', 'class' => 'mt-4 text-center form-control', 'tabindex' => '1', 'placeholder' => 'Teléfono']]
-                            )->label(false)->textInput() ?>
-                        </div>
-                        <div style="display: flex;flex-direction: row;align-items: first baseline;justify-content: center;">
-                            <p class="obligatorio" >*</p>
-                            <?= $form->field(
-                                $dataProvider,
-                                'numero_documento',
-                                ['inputOptions' => ['class' => 'mt-4 text-center form-control','style' => 'display:inline;border-radius:10px;background-color:transparent;width:350px;border:1px solid black', 'autofocus' => 'autofocus', 'tabindex' => '1', 'placeholder' => 'Documento']]
                             )->label(false)->textInput() ?>
                         </div>
                     </div>
