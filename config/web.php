@@ -64,23 +64,6 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        // 'mailer' => [
-        //     'class' => \yii\symfonymailer\Mailer::class,
-        //     'viewPath' => '@app/mail',
-        //     // send all mails to a file by default.
-        //     'useFileTransport' => true,
-        // ],
-        // 'mailer' => [
-        //     'class' => 'yii\swiftmailer\Mailer',
-        //     'transport' => [
-        //         'class' => 'Swift_SmtpTransport',
-        //         'host' => 'mail.pcs.com.ar',
-        //         'username' => 'testing@testing.pcs.com.ar',
-        //         'password' => 'PvR2eLsCkIIe',
-        //         'port' => '25',
-        //         //'encryption' => 'ssl', // Es usado también a menudo, revise la configuración del servidor
-        //     ],
-        // ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'transport' => [
