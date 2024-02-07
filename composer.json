@@ -1,82 +1,106 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Project Template",
-    "keywords": ["yii2", "framework", "basic", "project template"],
-    "homepage": "https://www.yiiframework.com/",
-    "type": "project",
+    "name": "2amigos/yii2-usuario",
+    "description": "Highly customizable and extensible user management, authentication, and authorization Yii2 extension",
+    "type": "yii2-extension",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "https://www.yiiframework.com/forum/",
-        "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
+        "issues": "https://github.com/2amigos/yii2-usuario/issues?state=open",
+        "forum": "https://gitter.im/2amigos/yii2-usuario",
+        "source": "https://github.com/2amigos/yii2-usuario"
     },
-    "minimum-stability": "stable",
+    "keywords": [
+        "2amigos",
+        "yii",
+        "yii2",
+        "yii 2",
+        "yii framework",
+        "user",
+        "access",
+        "rbac",
+        "acl",
+        "backend",
+        "yii2-user",
+        "yii2 user",
+        "user management"
+    ],
+    "authors": [
+        {
+            "name": "2amigOS! Consulting Group",
+            "email": "hola@2amigos.us",
+            "homepage": "http://2amigos.us",
+            "role": "Developer"
+        },
+        {
+            "name": "Antonio Ramirez Cobos",
+            "email": "hola@2amigos.us",
+            "homepage": "http://2amigos.us",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": ">=7.4.0",
-        "yiisoft/yii2": "~2.0.45",
-        "yiisoft/yii2-bootstrap5": "~2.0.2",
-        "2amigos/yii2-usuario": "dev-v2.0.0-dev",
-        "yiisoft/yii2-swiftmailer": "^2.1",
-        "kartik-v/yii2-grid": "dev-master",
-        "kartik-v/yii2-widget-fileinput": "@dev",
-        "kartik-v/yii2-widget-datepicker": "^1.4",
-        "kartik-v/yii2-widgets": "^3.4",
-        "setasign/fpdi": "^2.3",
-        "setasign/fpdf": "^1.8",
-        "tecnickcom/tcpdf": "^6.6",
-        "yiisoft/yii2-symfonymailer": "^3.0",
-        "dominus77/yii2-sweetalert2-widget": "~1.3"
+        "php": ">=5.5",
+        "yiisoft/yii2-authclient": "^2.1",
+        "yiisoft/yii2-httpclient": "^2.0",
+        "yetopen/yii2-sms-sender-interface": "^0.1.1"
+    },
+    "suggest": {
+        "yiisoft/yii2-bootstrap5": "Front-end framework needed for the default views",
+        "kartik-v/yii2-widget-select2": "needed for default Botstrap-5 views",
+        "twbs/bootstrap-icons": "Icons for Bootstrap 5 views",
+        "yiisoft/yii2-symfonymailer": "A mailer driver is needed to send e-mails. Older versions use abandoned Swiftmailer which can be replaced with symfonymailer",
+        "2amigos/2fa-library": "Needed if you want to enable 2 Factor Authentication. Require version ^1.0",
+        "2amigos/qrcode-library": "Needed if you want to enable 2FA with QR Code generation. Require version ^1.1"
     },
     "require-dev": {
-        "kartik-v/yii2-widget-select2": "@dev",
-        "yiisoft/yii2-bootstrap": "@dev",
-        "yiisoft/yii2-debug": "~2.1.0",
-        "yiisoft/yii2-gii": "~2.2.0",
-        "yiisoft/yii2-faker": "~2.0.0",
-        "phpunit/phpunit": "~9.5.0",
-        "codeception/codeception": "^5.0.0 || ^4.0",
-        "codeception/lib-innerbrowser": "^3.0 || ^1.1",
-        "codeception/module-asserts": "^3.0 || ^1.1",
+        "php": ">=7.4",
+        "kartik-v/yii2-widget-select2": "^2.2",
+        "yiisoft/yii2-bootstrap5": "^2.0",
+        "2amigos/2fa-library": "^2.0",
+        "2amigos/qrcode-library": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3",
+        "yiisoft/yii2-symfonymailer": "^2|^3",
+        "squizlabs/php_codesniffer": "*",
+        "phpmd/phpmd": "@stable",
+        "codeception/codeception": "^4|^5",
+        "roave/security-advisories": "dev-master",
+        "codeception/module-filesystem": "^2|^3",
         "codeception/module-yii2": "^1.1",
-        "codeception/module-filesystem": "^2.0 || ^1.1",
-        "codeception/verify": "^2.2",
-        "symfony/browser-kit": "^6.0 || >=2.7 <=4.2.4"
+        "codeception/module-asserts": "^2|^3",
+        "codeception/module-db": "^2|^3",
+        "phpstan/phpstan": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Da\\User\\": "./src/User"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Da\\User\\": "./src/User"
+        }
     },
     "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer" : true
+        "platform": {
+            "php": "7.4"
         },
-        "process-timeout": 1800,
+        "preferred-install": {
+            "*": "auto"
+        },
         "fxp-asset": {
             "enabled": false
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
         }
     },
-    "scripts": {
-        "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
-        ],
-        "post-create-project-cmd": [
-            "yii\\composer\\Installer::postCreateProject",
-            "yii\\composer\\Installer::postInstall"
-        ]
+    "conflict": {
+        "dektrium/yii2-rbac": "*",
+        "dektrium/yii2-user": "*"
     },
     "extra": {
-        "yii\\composer\\Installer::postCreateProject": {
-            "setPermission": [
-                {
-                    "runtime": "0777",
-                    "web/assets": "0777",
-                    "yii": "0755"
-                }
-            ]
-        },
-        "yii\\composer\\Installer::postInstall": {
-            "generateCookieValidationKey": [
-                "config/web.php"
-            ]
-        }
+        "bootstrap": "Da\\User\\Bootstrap"
     },
     "repositories": [
         {
