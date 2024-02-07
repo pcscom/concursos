@@ -349,29 +349,22 @@ class ProfileController extends Controller
                 // $pdf->SetY(45);
                 
                 $pdf->SetFont('Arial', '', 12, '', true, 'UTF-8');
-                $encabezado = 'A partir del día de hoy ' . date('d/m/Y') . ' usted se encuentra preinscripto en estado pendiente al concurso';
-                $pdf->Cell(40, 12, utf8_decode($encabezado), 0, 1);
-                $encabezado = 'detallado a continuación. Recuerde que para que sea efectiva su Inscripción, debe dirigirse a la';
-                $pdf->Cell(40, 12, utf8_decode($encabezado), 0, 1);
-                $encabezado = 'plataforma TAD-UBA (en https://tramitesadistancia.uba.ar/ ) donde deberá anexar este formulario a la';
-                $pdf->Cell(40, 12, utf8_decode($encabezado), 0, 1);
-                $encabezado = 'documentación solicitada. Desde el ' . (new DateTime($concurso->fecha_inicio_inscripcion))->format('d/m/Y') . ' hasta el ' . (new DateTime($concurso->fecha_fin_inscripcion))->format('d/m/Y') . ' hasta las 18:00 de';
-                $pdf->Cell(40, 12, utf8_decode($encabezado), 0, 1);
-                $encabezado = 'la fecha del día de cierre. Este recibo de preinscripción NO habilita a la presentación.';
-                $pdf->Cell(40, 12, utf8_decode($encabezado), 0, 1);
-                
+
+                $line = 'A partir del día de hoy ' . date('d/m/Y') . ' usted se encuentra preinscripto en estado pendiente al concurso detallado a continuación. Recuerde que para que sea efectiva su Inscripción, debe dirigirse a la plataforma TAD-UBA (en https://tramitesadistancia.uba.ar/ ) donde deberá anexar este formulario a la documentación solicitada. Desde el ' . (new DateTime($concurso->fecha_inicio_inscripcion))->format('d/m/Y') . ' hasta el ' . (new DateTime($concurso->fecha_fin_inscripcion))->format('d/m/Y') . ' hasta las 18:00 de la fecha del día de cierre. Este recibo de preinscripción NO habilita a la presentación.';
+                $lines = ceil($pdf->GetStringWidth($line) / $width); 
+                $height = $lines * $lineHeight;
+                ($line)&&$pdf->MultiCell($width, 7, utf8_decode($line), 0, 'L');
+
 
                 $pdf->Cell(40, 12, '', 0, 1);
                 $pdf->SetFont('Arial', 'B', 18);
                 $pdf->SetFillColor(200, 200, 200);  
                 $pdf->SetDrawColor(255, 255, 255);  
-                $pdf->Cell(0, 10, 'DATOS DEL CONCURSO', 1, 1, 'L', 1);
-                // $pdf->Cell(40, 12, '', 0, 1);
-
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->Cell(0, 12, 'DATOS DEL CONCURSO', 1, 1, 'L', 1);
                 
                 $line = "Nº de expediente: $concurso->numero_expediente";
                 $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->Cell(40, 5, '', 0, 1);
 
                 $lines = ceil($pdf->GetStringWidth($line) / $width); 
                 $height = $lines * $lineHeight;
@@ -462,21 +455,22 @@ class ProfileController extends Controller
                 $pdf->SetFillColor(200, 200, 200);  
                 $pdf->SetDrawColor(255, 255, 255);  
                 $pdf->Cell(40, 12, '', 0, 1);
-                $pdf->Cell(0, 10, 'DATOS DEL ASPIRANTE', 1, 1, 'L', 1);
-                // $pdf->Cell(40, 12, '', 0, 1);
+                $pdf->Cell(0, 12, 'DATOS DEL ASPIRANTE', 1, 1, 'L', 1);
 
                 $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
-                ($profile->numero_documento)&&$pdf->Cell(40, 12, 'Documento: '.$profile->numero_documento, 0, 1);                              
-                ($profile->cuil)&&$pdf->Cell(40, 12, 'CUIL: '.$profile->cuil, 0, 1);                              
-                ($profile->apellido)&&$pdf->Cell(40, 12, 'Apellido: '.$profile->apellido, 0, 1);                              
-                ($profile->nombre)&&$pdf->Cell(40, 12, 'Nombre: '.$profile->nombre, 0, 1);    
-                ($profile->sexo)&&$pdf->Cell(40, 12, 'Sexo: '.$profile->sexo, 0, 1);    
+                $pdf->Cell(40, 5, '', 0, 1);
+
+                ($profile->numero_documento)&&$pdf->Cell(40, 12, utf8_decode('Documento: '.$profile->numero_documento), 0, 1);                              
+                ($profile->cuil)&&$pdf->Cell(40, 12, utf8_decode('CUIL: '.$profile->cuil), 0, 1);                              
+                ($profile->apellido)&&$pdf->Cell(40, 12, utf8_decode('Apellido: '.$profile->apellido), 0, 1);                              
+                ($profile->nombre)&&$pdf->Cell(40, 12, utf8_decode('Nombre: '.$profile->nombre), 0, 1);    
+                ($profile->sexo)&&$pdf->Cell(40, 12, utf8_decode('Sexo: '.$profile->sexo), 0, 1);    
 
                 $trato = Trato::find()->where(['id_trato' => $profile->id_trato])->one();
-                ($trato)&&$pdf->Cell(40, 12, 'Trato: '.$trato->abreviatura_trato, 0, 1);   
+                ($trato)&&$pdf->Cell(40, 12, utf8_decode('Trato: '.$trato->abreviatura_trato), 0, 1);   
 
-                ($profile->numero_celular_sms)&&$pdf->Cell(40, 12, 'Telefono: '.$profile->numero_celular_sms, 0, 1);                              
-                ($profile->email)&&$pdf->Cell(40, 12, 'Email: '.$profile->email, 0, 1); 
+                ($profile->numero_celular_sms)&&$pdf->Cell(40, 12, utf8_decode('Telefono: '.$profile->numero_celular_sms), 0, 1);                              
+                ($profile->email)&&$pdf->Cell(40, 12, utf8_decode('Email: '.$profile->email), 0, 1); 
 
                 $pdf->Cell(40, 12, '', 0, 1);
                 $pdf->SetFont('Arial', 'B', 16, '', true, 'UTF-8');
@@ -486,8 +480,8 @@ class ProfileController extends Controller
                 $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
                 ($profile->estado_civil)&&$pdf->Cell(40, 12, 'Estado civil: '.$profile->estado_civil, 0, 1);                              
                 ($profile->estado_civil != 'soltero')&&($profile->conyuge)&&$pdf->Cell(40, 12, 'Nombre y Apellido del Conyuge / Concubino: '.$profile->conyuge, 0, 1);                              
-                ($profile->madre)&&$pdf->Cell(40, 12, 'Nombre y Apellido de la Madre: '.$profile->madre, 0, 1);                              
-                ($profile->padre)&&$pdf->Cell(40, 12, 'Nombre y Apellido del Padre: '.$profile->padre, 0, 1);    
+                ($profile->madre)&&$pdf->Cell(40, 12, utf8_decode('Nombre y Apellido de la Madre: '.$profile->madre), 0, 1);                              
+                ($profile->padre)&&$pdf->Cell(40, 12, utf8_decode('Nombre y Apellido del Padre: '.$profile->padre), 0, 1);    
                 
                 $pdf->Cell(40, 12, '', 0, 1);
                 $pdf->SetFont('Arial', 'B', 16, '', true, 'UTF-8');
@@ -503,10 +497,10 @@ class ProfileController extends Controller
                 $nacimiento_expedido = (is_numeric($profile->nacimiento_expedido) && $profile->nacimiento_expedido >= 0 && $profile->nacimiento_expedido <= 23)?$this->provincias[$profile->nacimiento_expedido]:$profile->nacimiento_expedido;
                 
                 $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
-                ($profile->nacimiento_fecha)&&$pdf->Cell(40, 12, 'Fecha Nacimiento: '.$profile->nacimiento_fecha, 0, 1);                              
-                ($profile->nacimiento_localidad)&&$pdf->Cell(40, 12, 'Localidad: '.$profile->nacimiento_localidad, 0, 1);                              
-                ($profile->nacimiento_expedido)&&$pdf->Cell(40, 12, 'Provincia: '.$nacimiento_expedido, 0, 1);                              
-                ($profile->nacimiento_pais)&&$pdf->Cell(40, 12, 'Pais: '.$profile->nacimiento_pais, 0, 1);  
+                ($profile->nacimiento_fecha)&&$pdf->Cell(40, 12, utf8_decode('Fecha Nacimiento: '.$profile->nacimiento_fecha), 0, 1);                              
+                ($profile->nacimiento_localidad)&&$pdf->Cell(40, 12, utf8_decode('Localidad: '.$profile->nacimiento_localidad), 0, 1);                              
+                ($profile->nacimiento_expedido)&&$pdf->Cell(40, 12, utf8_decode('Provincia: '.$nacimiento_expedido), 0, 1);                              
+                ($profile->nacimiento_pais)&&$pdf->Cell(40, 12, utf8_decode('Pais: '.$profile->nacimiento_pais), 0, 1);  
 
                 $pdf->Cell(40, 12, '', 0, 1);
                 $pdf->SetFont('Arial', 'B', 16, '', true, 'UTF-8');
@@ -516,14 +510,14 @@ class ProfileController extends Controller
                 $domicilio_provincia = (is_numeric($profile->domicilio_provincia) && $profile->domicilio_provincia >= 0 && $profile->domicilio_provincia <= 23)?$this->provincias[$profile->domicilio_provincia]:$profile->domicilio_provincia;
 
                 $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
-                ($profile->domicilio_calle)&&$pdf->Cell(40, 12, 'Calle: '.$profile->domicilio_calle, 0, 1);                              
-                ($profile->domicilio_numero)&&$pdf->Cell(40, 12, 'Numero: '.$profile->domicilio_numero, 0, 1);                              
-                ($profile->domicilio_piso)&&$pdf->Cell(40, 12, 'Piso: '.$profile->domicilio_piso, 0, 1);                              
-                ($profile->domicilio_departamento)&&$pdf->Cell(40, 12, 'Departamento: '.$profile->domicilio_departamento, 0, 1);  
-                ($profile->domicilio_codigo_postal)&&$pdf->Cell(40, 12, 'CP: '.$profile->domicilio_codigo_postal, 0, 1);                              
-                ($profile->domicilio_localidad)&&$pdf->Cell(40, 12, 'Localidad: '.$profile->domicilio_localidad, 0, 1);                              
-                ($profile->domicilio_provincia)&&$pdf->Cell(40, 12, 'Provincia: '.$domicilio_provincia, 0, 1);                              
-                ($profile->domicilio_pais)&&$pdf->Cell(40, 12, 'Pais: '.$profile->domicilio_pais, 0, 1);  
+                ($profile->domicilio_calle)&&$pdf->Cell(40, 12, utf8_decode('Calle: '.$profile->domicilio_calle), 0, 1);                              
+                ($profile->domicilio_numero)&&$pdf->Cell(40, 12, utf8_decode('Numero: '.$profile->domicilio_numero), 0, 1);                              
+                ($profile->domicilio_piso)&&$pdf->Cell(40, 12, utf8_decode('Piso: '.$profile->domicilio_piso), 0, 1);                              
+                ($profile->domicilio_departamento)&&$pdf->Cell(40, 12, utf8_decode('Departamento: '.$profile->domicilio_departamento), 0, 1);  
+                ($profile->domicilio_codigo_postal)&&$pdf->Cell(40, 12, utf8_decode('CP: '.$profile->domicilio_codigo_postal), 0, 1);                              
+                ($profile->domicilio_localidad)&&$pdf->Cell(40, 12, utf8_decode('Localidad: '.$profile->domicilio_localidad), 0, 1);                              
+                ($profile->domicilio_provincia)&&$pdf->Cell(40, 12, utf8_decode('Provincia: '.$domicilio_provincia), 0, 1);                              
+                ($profile->domicilio_pais)&&$pdf->Cell(40, 12, utf8_decode('Pais: '.$profile->domicilio_pais), 0, 1);  
 
                 if (CargosActuales::find()->where(['user_id' => Yii::$app->user->id])->count() > 0) {
                     $cargosactuales=CargosActuales::find()->where(['user_id' => Yii::$app->user->id])->all(); 
@@ -559,16 +553,56 @@ class ProfileController extends Controller
                     $pdf->SetDrawColor(0);
                     $pdf->Line($pdf->GetX(), $pdf->GetY(), $pdf->GetX() + $width, $pdf->GetY());
                     $pdf->SetDrawColor(255, 255, 255);
+                    $pdf->SetFont('Arial', '', 12, '', true, 'UTF-8');    
 
+                    $xPosition = $pdf->GetX();
+                    $yPosition = $pdf->GetY();
                     foreach ($cargosactuales as $index => $cargoactual) {
+                        $lines = ceil($pdf->GetStringWidth($cargoactual->designacion) / $columnWidths[0]); 
+                        $height0 = $lines * 12; 
+                        $lines = ceil($pdf->GetStringWidth($cargoactual->dedicacion) / $columnWidths[1]); 
+                        $height1 = $lines * 12; 
+                        $lines = ceil($pdf->GetStringWidth($cargoactual->asignatura) / $columnWidths[2]); 
+                        $height2 = $lines * 12; 
+                        $lines = ceil($pdf->GetStringWidth($cargoactual->facultad) / $columnWidths[3]); 
+                        $height3 = $lines * 12; 
+                        $lines = ceil($pdf->GetStringWidth($cargoactual->designacion) / $columnWidths[4]); 
+                        $height4 = $lines * 12; 
+                        $maxHeight = max($height0, $height1, $height2, $height3, $height4);
 
-                        $pdf->Cell($columnWidths[0], 12, utf8_decode($cargoactual->designacion), 1, 0, 'L', false);
-                        $pdf->Cell($columnWidths[1], 12, utf8_decode($cargoactual->categoria), 1, 0, 'L', false);
-                        $pdf->Cell($columnWidths[2], 12, utf8_decode($cargoactual->dedicacion), 1, 0, 'L', false);
-                        $pdf->Cell($columnWidths[3], 12, utf8_decode($cargoactual->asignatura), 1, 0, 'L', false);
-                        $pdf->Cell($columnWidths[4], 12, utf8_decode($cargoactual->facultad), 1, 0, 'L', false);
+                        $pdf->SetX($xPosition);
 
-                        $pdf->Ln();
+                        $pdf->SetY($yPosition);
+
+                        $pdf->MultiCell($columnWidths[0], 7, utf8_decode($cargoactual->designacion), 0, 'L', false);
+                        // $pdf->MultiCell($columnWidths[0], 7, utf8_decode($pdf->GetX()), 0, 'L', false);
+
+                        $pdf->SetY($yPosition);
+                        $pdf->SetX($xPosition + $columnWidths[0]);
+                    
+                        $pdf->MultiCell($columnWidths[1], 7, utf8_decode($cargoactual->categoria), 0, 'L', false);
+                        // $pdf->MultiCell($columnWidths[0], 7, utf8_decode($pdf->GetX()), 0, 'L', false);
+
+                        $pdf->SetY($yPosition);
+                        $pdf->SetX($xPosition + $columnWidths[0] + $columnWidths[1]);
+                    
+                        $pdf->MultiCell($columnWidths[2], 7, utf8_decode($cargoactual->dedicacion), 0, 'L', false);
+                        // $pdf->MultiCell($columnWidths[0], 7, utf8_decode($pdf->GetX()), 0, 'L', false);
+
+                        $pdf->SetY($yPosition);
+                        $pdf->SetX($xPosition + $columnWidths[0] + $columnWidths[1] + $columnWidths[2]);
+                    
+                        $pdf->MultiCell($columnWidths[3], 7, utf8_decode($cargoactual->asignatura), 0, 'L', false);
+                        // $pdf->MultiCell($columnWidths[0], 7, utf8_decode($pdf->GetX()), 0, 'L', false);
+
+                        $pdf->SetY($yPosition);
+                        $pdf->SetX($xPosition + $columnWidths[0] + $columnWidths[1] + $columnWidths[2] + $columnWidths[3]);
+                    
+                        $pdf->MultiCell($columnWidths[4], 7, utf8_decode($cargoactual->facultad), 0, 'L', false);
+                        // $pdf->MultiCell($columnWidths[0], 7, utf8_decode($pdf->GetX()), 0, 'L', false);
+
+                        $yPosition = $yPosition + 20;
+                        // $pdf->Ln();
                     }
 
 
@@ -579,132 +613,132 @@ class ProfileController extends Controller
                 $pdf->SetFont('Arial', 'B', 18);
                 $pdf->SetFillColor(200, 200, 200);  
                 $pdf->SetDrawColor(255, 255, 255);  
-                $pdf->Cell(0, 10, 'ANTECEDENTES ACADEMICOS', 1, 1, 'L', 1);
-                // $pdf->Cell(40, 12, '', 0, 1);
+                $pdf->Cell(0, 13, 'ANTECEDENTES ACADEMICOS', 1, 1, 'L', 1);
+                $pdf->Cell(40, 12, '', 0, 1);
 
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('A.      TITULOS UNIVERSITARIOS OBTENIDOS '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando Facultad, Universidad que los otorgó. Los títulos universitarios no expedidos por esta Universidad deberán presentarse legalizados. La legalización se realiza en https://tramitesadistancia.uba.ar/ opción "Legalización de Títulos para Concursos UBA". De tratarse de títulos que no se encuentran en idioma español, deberá adjuntarse la debida traducción pública en el trámite de legalización.)'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->titulos_obtenidos) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->titulos_obtenidos)&&$pdf->MultiCell($width, 13, utf8_decode($profile->titulos_obtenidos), 0, 'L');
+                ($profile->titulos_obtenidos)&&$pdf->MultiCell($width, 10, utf8_decode($profile->titulos_obtenidos), 0, 'L');
                 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('B.      ANTECEDENTES DOCENTES E INDOLE DE LAS TAREAS DESARROLLADAS '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando institución, período de ejercicio y naturaleza de su designación, lapso y lugar en que fueron realizados)'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->antecedentes_docentes) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->antecedentes_docentes)&&$pdf->MultiCell($width, 13, utf8_decode($profile->antecedentes_docentes), 0, 'L');
+                ($profile->antecedentes_docentes)&&$pdf->MultiCell($width, 10, utf8_decode($profile->antecedentes_docentes), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('C.      ANTECEDENTES CIENTÍFICOS, CONSIGNANDO LAS PUBLICACIONES '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(identificar a los autores, indicar editorial o revista, lugar y fecha de publicación, volumen, número y páginas) U OTROS RELACIONADOS CON LA ESPECIALIDAD (indicando lapso y lugar en que fueron realizados).'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->antecedentes_cientificos) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->antecedentes_cientificos)&&$pdf->MultiCell($width, 13, utf8_decode($profile->antecedentes_cientificos), 0, 'L');
+                ($profile->antecedentes_cientificos)&&$pdf->MultiCell($width, 10, utf8_decode($profile->antecedentes_cientificos), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('D.      CURSOS DE ESPECIALIZACIÓN SEGUIDOS, CONFERENCIAS Y TRABAJOS DE INVESTIGACIÓN REALIZADOS SEAN ELLOS EDITOS O INEDITOS '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando lapso y lugar en que fueron realizados). Si se invocasen trabajos inéditos deberá presentar un ejemplar digitalizado por el aspirante, que será agregado al momento de confirmar la inscripción en https://tramitesadistancia.uba.ar/.'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->cursos) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->cursos)&&$pdf->MultiCell($width, 13, utf8_decode($profile->cursos), 0, 'L');
+                ($profile->cursos)&&$pdf->MultiCell($width, 10, utf8_decode($profile->cursos), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('E.      PARTICIPACIÓN EN CONGRESOS O ACONTECIMIENTOS SIMILARES NACIONALES O INTERNACIONALES '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando lugar y lapso en que se realizaron y calidad de representación).'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->congresos) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->congresos)&&$pdf->MultiCell($width, 13, utf8_decode($profile->congresos), 0, 'L');
+                ($profile->congresos)&&$pdf->MultiCell($width, 10, utf8_decode($profile->congresos), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('F.      1- ACTUACIÓN EN UNIVERSIDADES E INSTITUTOS NACIONALES, PROVINCIALES Y PRIVADOS REGISTRADOS EN EL PAIS O EN EL EXTERIOR '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando organismo o entidad, lugar y lapso)'));
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
-                $pdf->MultiCell($width, 13, utf8_decode(''), 0, 'L');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
+                $pdf->MultiCell($width, 10, utf8_decode(''), 0, 'L');
                 $pdf->Write(7, utf8_decode('        2- CARGOS QUE DESEMPEÑO O DESEMPEÑA EN LA ADMINISTRACIÓN PÚBLICA O EN LA ACTIVIDAD PRIVADA, EN EL PAIS O EN EL EXTRANJERO '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando organismo o entidad, lugar y lapso)'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->actuacion_universidades) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->actuacion_universidades)&&$pdf->MultiCell($width, 13, utf8_decode($profile->actuacion_universidades), 0, 'L');
+                ($profile->actuacion_universidades)&&$pdf->MultiCell($width, 10, utf8_decode($profile->actuacion_universidades), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('G.      FORMACIÓN DE RECURSOS HUMANOS '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando becas de instituciones acreditadas, tesinas, tesis, residencias, maestrías, etc.)'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->formacion_rrhh) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->formacion_rrhh)&&$pdf->MultiCell($width, 13, utf8_decode($profile->formacion_rrhh), 0, 'L');
+                ($profile->formacion_rrhh)&&$pdf->MultiCell($width, 10, utf8_decode($profile->formacion_rrhh), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('H.      SÍNTESIS DE LOS APORTES ORIGINALES EFECTUADOS EN EL EJERCICIO DE LA ESPECIALIDAD RESPECTIVA '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando lapso y lugar en que fueron realizados; no se deben indicar los mencionados en apartados anteriores).'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->sintesis_aportes) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->sintesis_aportes)&&$pdf->MultiCell($width, 13, utf8_decode($profile->sintesis_aportes), 0, 'L');
+                ($profile->sintesis_aportes)&&$pdf->MultiCell($width, 10, utf8_decode($profile->sintesis_aportes), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('I.      SÍNTESIS DE LA ACTUACIÓN PROFESIONAL Y/O DE EXTENSIÓN UNIVERSITARIA '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando lapso y lugar en que fueron realizados; no se deben indicar los mencionados en apartados anteriores).'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->sintesis_profesional) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->sintesis_profesional)&&$pdf->MultiCell($width, 13, utf8_decode($profile->sintesis_profesional), 0, 'L');
+                ($profile->sintesis_profesional)&&$pdf->MultiCell($width, 10, utf8_decode($profile->sintesis_profesional), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('J.      OTROS ELEMENTOS DE JUICIO QUE CONSIDERE VALIOSOS '));
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
                 $pdf->Write(7, utf8_decode('(indicando lapso y lugar en que fueron realizados; no se debe indicar los mencionados en apartados anteriores).'));
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->otros_antecedentes) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->otros_antecedentes)&&$pdf->MultiCell($width, 13, utf8_decode($profile->otros_antecedentes), 0, 'L');
+                ($profile->otros_antecedentes)&&$pdf->MultiCell($width, 10, utf8_decode($profile->otros_antecedentes), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
                 $pdf->MultiCell($width, 7, utf8_decode('K.      PLAN DE LABOR DOCENTE, DE INVESTIGACIÓN CIENTÍFICA Y TECNOLÓGICA Y DE EXTENSIÓN UNIVERSITARIA QUE, EN LÍNEAS GENERALES, DESARROLLARÁ EN CASO DE OBTENER EL CARGO CONCURSADO.'), 0, 'L');
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
-                $pdf->MultiCell($width, 13, utf8_decode('        i.	Para profesores titulares y asociados: Forma en que desarrollará la enseñanza, sus puntos de vista sobre temas básicos de su campo de conocimiento que deben transmitirse a los alumnos; la importancia relativa y ubicación de su área en el currículo de la carrera. Medios que propone para mantener actualizada la enseñanza y para llevar a la práctica los cambios que sugiere.'), 0, 'L');
-                $pdf->MultiCell($width, 13, utf8_decode('        ii.	Para profesor adjunto: Sus puntos de vista sobre temas básicos de su campo del conocimiento que deben transmitirse a los alumnos; la importancia relativa y ubicación de su área en el currículo de la carrera. Medios que propone para mantener actualizada la enseñanza y para llevar a la práctica los cambios que sugiere.'), 0, 'L');
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
+                $pdf->MultiCell($width, 10, utf8_decode('        i.	Para profesores titulares y asociados: Forma en que desarrollará la enseñanza, sus puntos de vista sobre temas básicos de su campo de conocimiento que deben transmitirse a los alumnos; la importancia relativa y ubicación de su área en el currículo de la carrera. Medios que propone para mantener actualizada la enseñanza y para llevar a la práctica los cambios que sugiere.'), 0, 'L');
+                $pdf->MultiCell($width, 10, utf8_decode('        ii.	Para profesor adjunto: Sus puntos de vista sobre temas básicos de su campo del conocimiento que deben transmitirse a los alumnos; la importancia relativa y ubicación de su área en el currículo de la carrera. Medios que propone para mantener actualizada la enseñanza y para llevar a la práctica los cambios que sugiere.'), 0, 'L');
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->labor_docente) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->labor_docente)&&$pdf->MultiCell($width, 13, utf8_decode($profile->labor_docente), 0, 'L');
+                ($profile->labor_docente)&&$pdf->MultiCell($width, 10, utf8_decode($profile->labor_docente), 0, 'L');
 
                 $pdf->AddPage();
-                $pdf->SetFont('Arial', 'B', 13, '', true, 'UTF-8');
-                $pdf->MultiCell($width, 13, utf8_decode('L.	    INFORME DE LOS PROFESORES QUE RENUEVAN SOBRE EL CUMPLIMIENTO DEL PLAN DE ACTIVIDADES DOCENTES, DE INVESTIGACIÓN Y/O EXTENSIÓN PRESENTADO EN EL CONCURSO ANTERIOR, ACOMPAÑADO DE LAS CERTIFICACIONES QUE CORRESPONDA'), 0, 'L');
-                $pdf->SetFont('Arial', '', 13, '', true, 'UTF-8');
-                $pdf->Cell(40, 14, '', 0, 1);
+                $pdf->SetFont('Arial', 'B', 10, '', true, 'UTF-8');
+                $pdf->MultiCell($width, 10, utf8_decode('L.	    INFORME DE LOS PROFESORES QUE RENUEVAN SOBRE EL CUMPLIMIENTO DEL PLAN DE ACTIVIDADES DOCENTES, DE INVESTIGACIÓN Y/O EXTENSIÓN PRESENTADO EN EL CONCURSO ANTERIOR, ACOMPAÑADO DE LAS CERTIFICACIONES QUE CORRESPONDA'), 0, 'L');
+                $pdf->SetFont('Arial', '', 10, '', true, 'UTF-8');
+                $pdf->Cell(40, 10, '', 0, 1);
                 $lines = ceil($pdf->GetStringWidth($profile->renovacion) / $width); 
                 $height = $lines * $lineHeight; 
-                ($profile->renovacion)&&$pdf->MultiCell($width, 13, utf8_decode($profile->renovacion), 0, 'L');
+                ($profile->renovacion)&&$pdf->MultiCell($width, 10, utf8_decode($profile->renovacion), 0, 'L');
 
 
                 
