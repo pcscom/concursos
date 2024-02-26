@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use Da\User\Model\User;
+
 /**
  * This is the model class for table "profile".
  *
@@ -82,7 +83,20 @@ class Profile extends \yii\db\ActiveRecord
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['cid'], 'safe'],
             [['cid'], 'string'],
+            [['nacimiento_fecha'], 'validateEdad'],
         ];
+    }
+
+    public function validateEdad($attribute, $params)
+    {
+        $fechaNacimiento = $this->$attribute;
+
+        $fechaNacimientoTimestamp = strtotime($fechaNacimiento);
+        $edad = date('Y') - date('Y', $fechaNacimientoTimestamp);
+
+        if ($edad > 65) {
+            $this->addError($attribute, 'La edad no puede ser mayor a 65 años.');
+        }
     }
 
     /**

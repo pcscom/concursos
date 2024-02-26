@@ -88,11 +88,14 @@ use yii\helpers\Json;
         </div>
         
         <?php if($model->comentario): ?>
-        <div style="display:flex;flex-direction:row">
-            <div style="display:flex;flex-direction:column;min-width:70%">
-                <p style="font-weight:600;font-family:Helvetica">Comentario adicional al grupo de adignaturas</p>
+        <div style="display:flex;flex-direction:row;flex-wrap: wrap;">
+            <div style="display:flex;flex-direction:column;min-width:50%">
+                <p style="font-weight:600;font-family:Helvetica;min-width:50%">Comentario adicional al grupo de asignaturas</p>
             </div>        
-            <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
+            <div style="display:flex;flex-direction:column;flex-direction: column-reverse;
+                min-width: 50%;
+                align-items: end;
+                padding-right: 20px;">
                 <p style="font-weight:300;text-align:center;font-family:Helvetica"><?= $model->comentario?></p>
             </div>
         </div>
