@@ -1,9 +1,31 @@
-version: '2'
+version: "3.8"
 services:
   php:
-    image: yiisoftware/yii2-php:7.4-apache
-    volumes:
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      - ./:/app:delegated
+    build:
+      context: ./
+      dockerfile: deploy/app.Dockerfile
     ports:
-      - '8000:80'
+      - '8080:80'
+    networks:
+      - concursos     
+
+  db:
+    image: mysql
+    restart: always
+    command: --sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+    environment:
+      MYSQL_DATABASE: concursos
+      MYSQL_USER: concursos
+      MYSQL_PASSWORD: 1R27pfeGVOrI
+      MYSQL_ROOT_PASSWORD: 5cE19Iq_yH8h
+    volumes:
+      - ./deploy/database/concursos.sql:/docker-entrypoint-initdb.d/concursos.sql
+      - database:/var/lib/mysql 
+    networks:
+      - concursos  
+
+networks:
+  concursos:
+
+volumes:
+  database:
