@@ -21,7 +21,7 @@ use app\models\ConcursoAsignatura;
 use app\models\Asignatura;
 use app\models\Trato;
 use app\models\CargosActuales;
-
+use app\models\PersonaConcursoRenovacion;
 /** @var yii\web\View $this */
 /** @var app\models\ProfileQuery $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
@@ -227,6 +227,33 @@ $this->title = 'Profile';
                             </div>
                             <div class="ml-2" style="display:flex;align-items: center;max-width:700px">
                                 <p class="concurso_data"> <?php try{echo (Dedicacion::find()->where(['id_dedicacion' => $concurso->id_dedicacion])->one()->descripcion_dedicacion);} catch(\Throwable $e){echo ('');} ?></p>
+                            </div>
+                        </div>
+                        <div class="mb-2" style="display:flex;flex-direction:row">
+                            <div style="width:250px;display:flex;align-items: center;">
+                                <p class="my-0">Docente/s que ocupa/n cargo</p>
+                            </div>
+                            <div class="ml-2" style="display:flex;align-items: center;max-width:700px">
+                                <?php 
+                                    try{
+                                        $docentesqueocupancargo=PersonaConcursoRenovacion::find()->where(['id_concurso' => $concurso->id_concurso])->groupBy(['numero_documento'])->all();
+                                        $iddocenteArray = [];
+                                        foreach ($docentesqueocupancargo as $docente) {
+                                            if ($docente instanceof PersonaConcursoRenovacion): 
+                                                $perfilDocente = Profile::find()->where(['numero_documento' => $docente->numero_documento])->one();
+                                                if (!$perfilDocente) {
+                                                    continue;
+                                                }                                                
+                                                $nombre = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->nombre:'';
+                                                $apellido = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->apellido:'';
+                                                ?> 
+                                                <p class="concurso_data"><?= ($perfilDocente)? $nombre." ".$apellido:'' ?></p>
+                                            <?php endif;
+                                        }
+                                    } 
+                                    catch(\Throwable $e){
+                                    }
+                                ?>                            
                             </div>
                         </div>
                     </div>

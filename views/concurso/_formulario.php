@@ -11,6 +11,8 @@ use app\models\Categoria;
 use app\models\Dedicacion;
 use app\models\ConcursoAsignatura;
 use app\models\Asignatura;
+use app\models\PersonaConcursoRenovacion;
+use app\models\Profile;
 
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -127,6 +129,36 @@ use yii\helpers\Json;
                 <p style="font-weight:300;text-align:center;font-family:Helvetica"><?= $model->cantidad_de_puestos?></p>
             </div>
         </div>
+
+        <div style="display:flex;flex-direction:row">
+            <div style="display:flex;flex-direction:column;min-width:70%">
+                <p style="font-weight:600;font-family:Helvetica">Docente/s que ocupa/n cargo</p>
+            </div>        
+            <div style="display:flex;flex-direction:column;min-width:30%;align-items: center;">
+                <?php 
+                    try{
+                        $docentesqueocupancargo=PersonaConcursoRenovacion::find()->where(['id_concurso' => $model->id_concurso])->groupBy(['numero_documento'])->all();
+                        $iddocenteArray = [];
+                        foreach ($docentesqueocupancargo as $docente) {
+                            if ($docente instanceof PersonaConcursoRenovacion): 
+                                $perfilDocente = Profile::find()->where(['numero_documento' => $docente->numero_documento])->one();
+                                if (!$perfilDocente) {
+                                    continue;
+                                }  
+                                $nombre = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->nombre:'';
+                                $apellido = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->apellido:'';
+                                ?> 
+                                <p style="margin:0;font-weight:300;text-align:center;font-family:Helvetica"><?= ($perfilDocente)? $nombre." ".$apellido:'' ?></p>
+                            <?php endif;
+                        }
+                    } 
+                    catch(\Throwable $e){
+                    }
+                ?>
+    
+            </div>
+        </div>
+        
 
         <div style="display:flex;flex-direction:row">
             <div style="display:flex;flex-direction:column;min-width:70%">
