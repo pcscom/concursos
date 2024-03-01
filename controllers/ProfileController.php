@@ -182,13 +182,7 @@ class ProfileController extends Controller
                     {
                         if(isset($dataProvider->cid) && $dataProvider->cid != '0')
                         {
-                            if(!$dataProvider->save(false)){
-                                return $this->render('index?cid=0', [
-                                    'dataProvider' => $dataProvider,
-                                    'provincias' => $this->provincias
-                                ]);  
-                            };
-                            if(!($this->preinscripcion($dataProvider->cid) && $this->previsualizar($dataProvider->cid)))
+                            if(!($this->previsualizar($dataProvider->cid) && $this->preinscripcion($dataProvider->cid)))
                             {
                                 Yii::$app->session->setFlash('error', 'Error al preinscribirse.');
                                 return $this->render('index?cid=0', [
@@ -196,6 +190,12 @@ class ProfileController extends Controller
                                     'provincias' => $this->provincias
                                 ]);   
                             }
+                            if(!$dataProvider->save(false)){
+                                return $this->render('index?cid=0', [
+                                    'dataProvider' => $dataProvider,
+                                    'provincias' => $this->provincias
+                                ]);  
+                            };
                             Yii::$app->session->setFlash('success', 'Se preinscribió correctamente');
                             return $this->redirect(['/concurso']);
                         }
@@ -381,13 +381,16 @@ class ProfileController extends Controller
                 $lines = ceil($pdf->GetStringWidth($line) / $width); 
                 $height = $lines * $lineHeight;
                 ($line)&&$pdf->MultiCell($width, 13, utf8_decode($line), 0, 'L');
-
+                
+                try{
                 $data = (AreaDepartamento::find()->where(['id_area_departamento' => $concurso['id_area_departamento']])->andWhere(['id_facultad' => $concurso['id_facultad']])->one()->descripcion_area_departamento);
-                $line = "Area: $data";
+                $line = "Area: ".($data)?$dadta:"";
                 $lines = ceil($pdf->GetStringWidth($line) / $width); 
                 $height = $lines * $lineHeight;
                 ($line)&&$pdf->MultiCell($width, 13, utf8_decode($line), 0, 'L');
-
+                } 
+                catch(\Throwable $e){
+                }
                 
                 try{
                     $concursoAsignaturas=ConcursoAsignatura::find()->where(['id_concurso' => $concurso->id_concurso])->all();

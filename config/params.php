@@ -2,6 +2,6 @@
 
 return [
     'adminEmail' => 'admin@example.com',
-    'senderEmail' => 'crespi@pcscom.com.ar',
+    'senderEmail' => 'concursos-NORESPONDER@uba.ar',
     'senderName' => 'Example.com mailer',
     ];

@@ -112,16 +112,16 @@ $this->title = 'Concursos';
         </div>
 
         <!-- BOTONES -->
-        <?php $emptymessage=(Concurso::find()->where(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->andWhere(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->count())?'none':'block'; ?>
+        <?php $emptymessage=(Concurso::find()->where(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->andWhere(['like','id_facultad',$ua,false])->andWhere(['OR', ['like', 'id_area_departamento', $ar, false], ['id_area_departamento' => null]])->count())?'none':'block'; ?>
         <H4 id="emptymessage" style="display:<?= $emptymessage ?>">No se encontraron llamados activos.</H4>
 
         <div class="pt-4" style="display:flex;flex-wrap:wrap;width: 934px;flex-direction:row;">
             <?php 
-                $botones=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->groupBy('id_facultad')->all();
+                $botones=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['OR', ['like', 'id_area_departamento', $ar, false], ['id_area_departamento' => null]])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->groupBy('id_facultad')->all();
                 foreach ($botones as $boton): ?>
                 
                 <?php 
-                $activos=Concurso::find()->where(['like','id_facultad',$boton['id_facultad'],false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->count();//date('Y-m-d')])->count();
+                $activos=Concurso::find()->where(['like','id_facultad',$boton['id_facultad'],false])->andWhere(['OR', ['like', 'id_area_departamento', $ar, false], ['id_area_departamento' => null]])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->count();//date('Y-m-d')])->count();
                 if ( $activos > 0) : 
                 ?>
                 <?php $href="concurso?ua=".$boton['id_facultad']."&ar=".$ar ?>
@@ -163,7 +163,7 @@ $this->title = 'Concursos';
                     catch(\Throwable $e){
                         $activos=0;
                     }                    
-                    $concursos=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['like','id_area_departamento',$ar,false])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->orderBy(['fecha_inicio_inscripcion' => SORT_DESC])->all();
+                    $concursos=Concurso::find()->where(['like','id_facultad',$ua,false])->andWhere(['OR', ['like', 'id_area_departamento', $ar, false], ['id_area_departamento' => null]])->andWhere(['>=', 'fecha_fin_inscripcion', date('Y-m-d')])->andWhere(['<=', 'fecha_inicio_inscripcion', date('Y-m-d')])->orderBy(['fecha_inicio_inscripcion' => SORT_DESC])->all();
                     foreach ($concursos as $concurso): 
                 ?>
                     <tr>
