@@ -444,7 +444,6 @@ class ProfileController extends Controller
                     $primerDocente = true;
                     foreach ($docentesqueocupancargo as $docente) 
                     {
-                        echo($docente->numero_documento);
                         if ($docente instanceof PersonaConcursoRenovacion)
                         {
                             $perfilDocente = Profile::find()->where(['numero_documento' => $docente->numero_documento])->one();
@@ -461,10 +460,9 @@ class ProfileController extends Controller
                     }
                 } 
                 catch(\Throwable $e) {
-                    echo 'Error: ' . $e->getMessage();
+                    $line = "";
                 }
                 $line = "Docente/s que ocupa/n cargo: ".$docentes;
-                var_dump($line);
 
                 $lines = ceil($pdf->GetStringWidth($line) / $width); 
                 $height = $lines * $lineHeight;
