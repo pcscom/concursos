@@ -32,6 +32,7 @@ use app\models\Categoria;
 use app\models\Dedicacion;
 use app\models\CargosActuales;
 use app\models\Trato;
+use app\models\PersonaConcursoRenovacion;
 use DateTime;
 
 /**
@@ -431,6 +432,40 @@ class ProfileController extends Controller
                 ($line)&&$pdf->MultiCell($width, 13, utf8_decode($line), 0, 'L');
        
                 $line = "Cantidad de cargos: $concurso->cantidad_de_puestos";
+                $lines = ceil($pdf->GetStringWidth($line) / $width); 
+                $height = $lines * $lineHeight;
+                ($line)&&$pdf->MultiCell($width, 13, utf8_decode($line), 0, 'L');
+
+                try
+                {
+                    $docentesqueocupancargo=PersonaConcursoRenovacion::find()->where(['id_concurso' => $concurso->id_concurso])->groupBy(['numero_documento'])->all();
+                    $iddocenteArray = [];
+                    $docentes="";
+                    $primerDocente = true;
+                    foreach ($docentesqueocupancargo as $docente) 
+                    {
+                        echo($docente->numero_documento);
+                        if ($docente instanceof PersonaConcursoRenovacion)
+                        {
+                            $perfilDocente = Profile::find()->where(['numero_documento' => $docente->numero_documento])->one();
+                            if (!$perfilDocente) {
+                                continue;
+                            }  
+                            $nombre = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->nombre:'';
+                            $apellido = ($perfilDocente)?Profile::find()->where(['numero_documento' => $docente->numero_documento])->one()->apellido:'';
+                            $docentes .= (!$primerDocente)?", ":"";
+                            $docentes .= ($perfilDocente)? $nombre." ".$apellido:'' ;
+                            $primerDocente = false;
+                        }
+                        
+                    }
+                } 
+                catch(\Throwable $e) {
+                    echo 'Error: ' . $e->getMessage();
+                }
+                $line = "Docente/s que ocupa/n cargo: ".$docentes;
+                var_dump($line);
+
                 $lines = ceil($pdf->GetStringWidth($line) / $width); 
                 $height = $lines * $lineHeight;
                 ($line)&&$pdf->MultiCell($width, 13, utf8_decode($line), 0, 'L');

@@ -195,7 +195,7 @@ $this->title = 'Concursos';
                                     <div class="row ml-2 my-2" style="justify-content:center">
                                         <div class="btn btn-block eliminar"
                                         value="<?=$concurso['id_concurso']?>"
-                                        style="text-align: center;color:white;width:100px;background-color:#E35555;font-weight:600;font-size:10px">
+                                        style="text-align: center;color:white;width:100px;background-color:#E35555;font-weight:600;font-size:10px;display:none">
                                             Eliminar
                                         </div>
                                     </div>
