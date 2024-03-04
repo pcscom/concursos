@@ -91,11 +91,17 @@ class Profile extends \yii\db\ActiveRecord
     public function validateEdad($attribute, $params)
     {
         $fechaNacimiento = $this->$attribute;
-
+    
         $fechaNacimientoTimestamp = strtotime($fechaNacimiento);
-        $edad = date('Y') - date('Y', $fechaNacimientoTimestamp);
-
-        if ($edad > 65) {
+        $hoy = time();
+    
+        $diferencia = $hoy - $fechaNacimientoTimestamp;
+    
+        $edadAnios = floor($diferencia / (365.25 * 24 * 60 * 60));
+        $edadMeses = floor(($diferencia % (365.25 * 24 * 60 * 60)) / (30.44 * 24 * 60 * 60));
+        $edadDias = floor(($diferencia % (30.44 * 24 * 60 * 60)) / (24 * 60 * 60));
+    
+        if ($edadAnios > 65 || ($edadAnios == 65 && ($edadMeses > 0 || $edadDias > 0))) {
             $this->addError($attribute, 'La edad no puede ser mayor a 65 años.');
         }
     }
