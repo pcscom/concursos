@@ -4,6 +4,11 @@ services:
     build:
       context: ./
       dockerfile: deploy/app.Dockerfile
+    environment:
+      MYSQL_USER: concursos
+      MYSQL_PASSWORD: 1R27pfeGVOrI
+      SMTP_USER: concursos-NORESPONDER@uba.ar
+      SMTP_PASSWORD: Soq49955
     ports:
       - '8080:80'
     networks:

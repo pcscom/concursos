@@ -69,8 +69,8 @@ $config = [
             'transport' => [
                 'scheme' => 'smtp',
                 'host' => ' smtp.office365.com',
-                'username' => 'concursos-NORESPONDER@uba.ar',
-                'password' => 'Soq49955',
+                'username' => $_ENV['SMTP_USER'],
+                'password' => $_ENV['SMTP_PASSWORD'],
                 'port' => '587',
                 'dsn' => 'native://default',
             ],
